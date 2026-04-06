@@ -102,15 +102,15 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col theme-page">
       <Header />
       <main className="flex-1 pt-24 px-4 sm:px-6 lg:px-8">
-        <div className="w-full max-w-md p-8 m-4 mx-auto bg-white rounded-2xl shadow-sm border border-zinc-200">
+        <div className="theme-panel w-full max-w-md p-8 m-4 mx-auto rounded-2xl">
           <div className="text-center mb-8">
-            <h1 className="text-3xl font-bold text-zinc-900 mb-2">
+            <h1 className="text-3xl font-bold text-[var(--theme-text)] mb-2">
               {t("auth.register.title")}
             </h1>
-            <p className="text-zinc-600">{t("auth.register.subtitle")}</p>
+            <p className="text-[var(--theme-text-muted)]">{t("auth.register.subtitle")}</p>
           </div>
 
           {error && (
@@ -124,7 +124,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="firstName"
-                  className="block text-sm font-medium text-zinc-700 mb-2"
+                  className="block text-sm font-medium text-[var(--theme-text)] mb-2"
                 >
                   {t("auth.firstName")}
                 </label>
@@ -134,7 +134,7 @@ export default function RegisterPage() {
                   name="firstName"
                   value={formData.firstName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179] focus:border-transparent transition-all ${
+                  className={`theme-input w-full px-4 py-3 rounded-lg transition-all ${
                     formErrors.firstName ? "border-red-500" : ""
                   }`}
                   placeholder="John"
@@ -150,7 +150,7 @@ export default function RegisterPage() {
               <div>
                 <label
                   htmlFor="lastName"
-                  className="block text-sm font-medium text-zinc-700 mb-2"
+                  className="block text-sm font-medium text-[var(--theme-text)] mb-2"
                 >
                   {t("auth.lastName")}
                 </label>
@@ -160,7 +160,7 @@ export default function RegisterPage() {
                   name="lastName"
                   value={formData.lastName}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179] focus:border-transparent transition-all ${
+                  className={`theme-input w-full px-4 py-3 rounded-lg transition-all ${
                     formErrors.lastName ? "border-red-500" : ""
                   }`}
                   placeholder="Doe"
@@ -177,7 +177,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="email"
-                className="block text-sm font-medium text-zinc-700 mb-2"
+                className="block text-sm font-medium text-[var(--theme-text)] mb-2"
               >
                 {t("auth.emailAddress")}
               </label>
@@ -187,7 +187,7 @@ export default function RegisterPage() {
                 name="email"
                 value={formData.email}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179] focus:border-transparent transition-all ${
+                className={`theme-input w-full px-4 py-3 rounded-lg transition-all ${
                   formErrors.email ? "border-red-500" : ""
                 }`}
                 placeholder="you@example.com"
@@ -201,7 +201,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="password"
-                className="block text-sm font-medium text-zinc-700 mb-2"
+                className="block text-sm font-medium text-[var(--theme-text)] mb-2"
               >
                 {t("auth.password")}
               </label>
@@ -212,7 +212,7 @@ export default function RegisterPage() {
                   name="password"
                   value={formData.password}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179] focus:border-transparent transition-all ${
+                  className={`theme-input w-full px-4 py-3 rounded-lg transition-all ${
                     formErrors.password ? "border-red-500" : ""
                   }`}
                   placeholder="••••••••"
@@ -221,7 +221,7 @@ export default function RegisterPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-700 transition-colors"
+                  className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors"
                 >
                   {showPassword ? (
                     <svg
@@ -270,7 +270,7 @@ export default function RegisterPage() {
             <div>
               <label
                 htmlFor="confirmPassword"
-                className="block text-sm font-medium text-zinc-700 mb-2"
+                className="block text-sm font-medium text-[var(--theme-text)] mb-2"
               >
                 {t("auth.confirmPassword")}
               </label>
@@ -280,7 +280,7 @@ export default function RegisterPage() {
                 name="confirmPassword"
                 value={formData.confirmPassword}
                 onChange={handleChange}
-                className={`w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179] focus:border-transparent transition-all ${
+                className={`theme-input w-full px-4 py-3 rounded-lg transition-all ${
                   formErrors.confirmPassword ? "border-red-500" : ""
                 }`}
                 placeholder="••••••••"
@@ -300,23 +300,23 @@ export default function RegisterPage() {
                 name="agreeToTerms"
                 checked={formData.agreeToTerms}
                 onChange={handleChange}
-                className="mt-1 w-4 h-4 rounded border-gray-600 text-blue-600 focus:ring-blue-500"
+                className="mt-1 w-4 h-4 rounded border-[var(--theme-border-strong)] text-[var(--theme-accent-strong)] focus:ring-[var(--theme-accent)]"
               />
               <label
                 htmlFor="agreeToTerms"
-                className="ml-2 text-sm text-zinc-600"
+                className="ml-2 text-sm text-[var(--theme-text-muted)]"
               >
                 {t("auth.termsTextPrefix")}{" "}
                 <Link
                   href="/terms"
-                  className="text-[#84B179] hover:text-[#6f9766]"
+                  className="theme-link"
                 >
                   {t("auth.terms")}
                 </Link>{" "}
                 {t("auth.and")}{" "}
                 <Link
                   href="/privacy"
-                  className="text-[#84B179] hover:text-[#6f9766]"
+                  className="theme-link"
                 >
                   {t("auth.privacy")}
                 </Link>
@@ -329,7 +329,7 @@ export default function RegisterPage() {
             <button
               type="submit"
               disabled={isSubmitting}
-              className="w-full py-3 px-4 bg-[#84B179] hover:bg-[#6f9766] text-white font-semibold rounded-lg shadow-sm transform transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+              className="theme-button-primary w-full py-3 px-4 font-semibold rounded-lg shadow-sm transform transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
             >
               {isSubmitting ? (
                 <span className="flex items-center justify-center">
@@ -361,11 +361,11 @@ export default function RegisterPage() {
           </form>
 
           <div className="mt-6 text-center">
-            <p className="text-zinc-500">
+            <p className="text-[var(--theme-text-muted)]">
               {t("auth.alreadyHave")}{" "}
               <Link
                 href="/login"
-                className="text-[#84B179] hover:text-[#6f9766] font-semibold transition-colors"
+                className="theme-link font-semibold transition-colors"
               >
                 {t("auth.signInLower")}
               </Link>

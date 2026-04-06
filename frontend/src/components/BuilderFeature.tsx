@@ -52,10 +52,10 @@ export default function BuilderFeatures() {
   };
 
   return (
-    <section className="py-16 px-12 sm:px-8 lg:px-12 bg-white">
+    <section className="py-16 px-12 sm:px-8 lg:px-12 bg-transparent">
       <div className="mx-auto">
         {/* Section Header */}
-        <h2 className="text-3xl sm:text-4xl font-bold text-zinc-900 mb-10 tracking-tight">
+        <h2 className="text-3xl sm:text-4xl font-bold text-[var(--theme-text)] mb-10 tracking-tight">
           Built for every builder
         </h2>
 
@@ -65,7 +65,7 @@ export default function BuilderFeatures() {
             <div
               key={index}
               onClick={handleNavigation}
-              className="bg-white border border-zinc-200 rounded-[1.5rem] p-7 flex flex-col h-full cursor-pointer hover:shadow-lg hover:border-zinc-300 transition-all duration-300 group"
+              className="theme-panel rounded-[1.5rem] p-7 flex flex-col h-full cursor-pointer hover:shadow-lg hover:border-[var(--theme-border-strong)] transition-all duration-300 group"
             >
               {/* Emoji Icon */}
               <div className="text-2xl mb-5 group-hover:scale-110 transition-transform origin-left">
@@ -73,12 +73,12 @@ export default function BuilderFeatures() {
               </div>
 
               {/* Title */}
-              <h3 className="text-[15px] font-bold text-zinc-900 mb-3 leading-tight">
+              <h3 className="text-[15px] font-bold text-[var(--theme-text)] mb-3 leading-tight">
                 {feature.title}
               </h3>
 
               {/* Description */}
-              <p className="text-[13px] text-zinc-500 leading-relaxed font-medium">
+              <p className="text-[13px] text-[var(--theme-text-muted)] leading-relaxed font-medium">
                 {feature.description}
               </p>
             </div>

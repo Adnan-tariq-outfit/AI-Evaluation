@@ -57,8 +57,8 @@ export default function HeroSection() {
 
   return (
     <section className="relative min-h-screen flex flex-col items-center justify-center px-4 sm:px-6 lg:px-8 pt-30 pb-16 overflow-hidden">
-      {/* Background - Pure White */}
-      <div className="absolute inset-0 -z-10 bg-white" />
+      <div className="absolute inset-0 -z-10 bg-[linear-gradient(180deg,rgba(252,251,245,0.96)_0%,rgba(245,243,234,0.88)_48%,rgba(239,236,223,0.92)_100%)]" />
+      <div className="absolute inset-x-0 top-0 -z-10 h-[38rem] bg-[radial-gradient(circle_at_top,rgba(232,245,189,0.72),transparent_58%)]" />
 
       <motion.div
         variants={containerVariants}
@@ -68,8 +68,8 @@ export default function HeroSection() {
       >
         {/* Badge */}
         <motion.div variants={itemVariants} className="mb-6">
-          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C7EABB]/30 text-[#6a9a5d] text-sm font-medium">
-            <span className="w-2 h-2 rounded-full bg-[#84B179] animate-pulse" />
+          <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full border border-[var(--theme-border-strong)] bg-[rgba(232,245,189,0.34)] text-[var(--theme-accent-hover)] text-sm font-medium">
+            <span className="w-2 h-2 rounded-full bg-[var(--theme-accent)] animate-pulse" />
             {t("hero.availableModels")}
           </span>
         </motion.div>
@@ -77,12 +77,11 @@ export default function HeroSection() {
         {/* Headline */}
         <motion.h1
           variants={itemVariants}
-          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-zinc-900 tracking-tight leading-[1.1] mb-6"
+          className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-[var(--theme-text)] tracking-tight leading-[1.1] mb-6"
         >
           {t("hero.titleLine1")}{" "}
           <span
-            className="text-[#84B179] block
-          "
+            className="block text-[var(--theme-accent-strong)]"
           >
             {t("hero.titleLine2")}
           </span>{" "}
@@ -92,7 +91,7 @@ export default function HeroSection() {
         {/* Subtext */}
         <motion.p
           variants={itemVariants}
-          className="text-lg sm:text-xl text-zinc-600 max-w-2xl mx-auto mb-10 leading-relaxed"
+          className="text-lg sm:text-xl text-[var(--theme-text-muted)] max-w-2xl mx-auto mb-10 leading-relaxed"
         >
           {t("hero.subtitle")}
         </motion.p>
@@ -102,10 +101,10 @@ export default function HeroSection() {
           <motion.div
             animate={{
               boxShadow: isFocused
-                ? "0 0 0 4px rgba(132, 177, 121, 0.15), 0 20px 40px -10px rgba(0, 0, 0, 0.1)"
-                : "0 10px 30px -10px rgba(0, 0, 0, 0.1)",
+                ? "0 0 0 4px rgba(132, 177, 121, 0.18), 0 24px 48px -18px rgba(88, 114, 72, 0.25)"
+                : "0 18px 40px -22px rgba(88, 114, 72, 0.2)",
             }}
-            className="relative bg-white rounded-2xl border border-zinc-100 overflow-hidden shadow-sm"
+            className="theme-panel relative rounded-3xl overflow-hidden"
           >
             <section>
               <ChatInputBarLanding />

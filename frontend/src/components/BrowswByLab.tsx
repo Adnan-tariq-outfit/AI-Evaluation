@@ -95,16 +95,16 @@ export default function BrowseByLab() {
   };
 
   return (
-    <section className="py-12 px-12 sm:px-8 lg:px-12 bg-[#F9F9F8]">
+    <section className="py-12 px-12 sm:px-8 lg:px-12 bg-transparent">
       <div className=" mx-auto">
         {/* Header Row */}
         <div className="flex justify-between items-end mb-8">
-          <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+          <h2 className="text-3xl font-bold text-[var(--theme-text)] tracking-tight">
             Browse by AI Lab
           </h2>
           <Link
             href="/marketplace"
-            className="text-xs font-bold text-[#E6743C] flex items-center gap-1 hover:underline tracking-tight"
+            className="text-xs font-bold theme-link flex items-center gap-1 hover:underline tracking-tight"
           >
             See all labs <ArrowRight className="w-3 h-3" />
           </Link>
@@ -116,7 +116,7 @@ export default function BrowseByLab() {
             <div
               key={index}
               onClick={handleNavigation}
-              className="bg-[#FCFCFB] border border-zinc-200 rounded-2xl p-5 flex flex-col items-center justify-center text-center h-[180px] cursor-pointer hover:shadow-lg hover:border-zinc-300 transition-all duration-300 group"
+              className="theme-panel rounded-2xl p-5 flex flex-col items-center justify-center text-center h-[180px] cursor-pointer hover:shadow-lg hover:border-[var(--theme-border-strong)] transition-all duration-300 group"
             >
               {/* Icon Container */}
               <div className="mb-5 group-hover:scale-110 transition-transform duration-300">
@@ -124,12 +124,12 @@ export default function BrowseByLab() {
               </div>
 
               {/* Lab Name */}
-              <h3 className="text-[13px] font-bold text-zinc-900 mb-1 leading-tight px-1">
+              <h3 className="text-[13px] font-bold text-[var(--theme-text)] mb-1 leading-tight px-1">
                 {lab.name}
               </h3>
 
               {/* Lab Subtext */}
-              <p className="text-[10px] font-medium text-zinc-400 leading-relaxed px-2">
+              <p className="text-[10px] font-medium text-[var(--theme-text-muted)] leading-relaxed px-2">
                 {lab.modelsCount} models · {lab.modelsList}
               </p>
             </div>

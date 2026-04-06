@@ -142,31 +142,36 @@ const TEMPLATES: AgentTemplate[] = [
     title: "Research Agent",
     desc: "Automates web research, summarizes findings, and generates reports.",
     tags: ["GPT-5", "Web Search", "Summaries"],
-    color: "bg-[#ECF7F0]",
+    color:
+      "bg-[rgba(232,245,189,0.42)] border border-[var(--theme-border-strong)]",
   },
   {
     title: "Customer Support Agent",
     desc: "Handles FAQs and resolves complex issues via multi-conversation context.",
     tags: ["Claude Sonnet 4", "Ticket System", "CRM"],
-    color: "bg-[#F5EEFF]",
+    color:
+      "bg-[rgba(215,233,196,0.44)] border border-[var(--theme-border-strong)]",
   },
   {
     title: "Code Review Agent",
     desc: "Reviews pull requests for bugs, suggests improvements, and explains changes.",
     tags: ["GPT-5", "GitHub API", "PR Checks"],
-    color: "bg-[#ECF2FF]",
+    color:
+      "bg-[rgba(232,245,189,0.42)] border border-[var(--theme-border-strong)]",
   },
   {
     title: "Data Analysis Agent",
     desc: "Processes spreadsheet and chart data to answer questions and produce insights.",
     tags: ["GPT-5", "CSV Parser", "Analytics"],
-    color: "bg-[#FFF7EA]",
+    color:
+      "bg-[rgba(215,233,196,0.44)] border border-[var(--theme-border-strong)]",
   },
   {
     title: "Content Writer Agent",
     desc: "Creates blog posts, social content, and marketing copy with consistent brand voice.",
     tags: ["GPT-5", "SEO Optimizer", "Brand Voice"],
-    color: "bg-[#FCEFF4]",
+    color:
+      "bg-[rgba(232,245,189,0.42)] border border-[var(--theme-border-strong)]",
   },
 ];
 
@@ -234,7 +239,7 @@ function makePrompt(data: CreateAgentPayload): string {
 
 function Badge({ label }: { label: string }) {
   return (
-    <span className="text-[10px] px-2 py-0.5 rounded-full border border-[#d7cfbf] bg-[#f8f6f1] text-zinc-700">
+    <span className="theme-badge text-[10px] px-2 py-0.5 rounded-full">
       {label}
     </span>
   );
@@ -253,9 +258,7 @@ function Chip({
     <button
       onClick={onClick}
       className={`px-3 py-1.5 text-sm rounded-full border transition-colors ${
-        active
-          ? "bg-[#fff3ea] border-[#d56a2f] text-[#c8682b]"
-          : "bg-[#f6f4ef] border-[#cfcac0] text-[#3a3937]"
+        active ? "theme-chip-active" : "theme-chip"
       }`}
     >
       {label}
@@ -277,19 +280,23 @@ function TemplateCard({
       onClick={onClick}
       className={`text-left rounded-xl border p-3 transition-all ${
         active
-          ? "border-[#d6723a] bg-[#fff8f3] shadow-sm"
-          : "border-[#ebe6dc] bg-white hover:shadow-sm"
+          ? "bg-[rgba(232,245,189,0.32)] border-[var(--theme-border-strong)] shadow-sm"
+          : "bg-[rgba(255,255,255,0.94)] border-[var(--theme-border)] hover:shadow-sm"
       }`}
     >
       <div className="flex items-center gap-2 mb-2">
         <span
           className={`w-7 h-7 rounded-lg ${item.color} inline-flex items-center justify-center`}
         >
-          <Bot className="w-4 h-4 text-zinc-700" />
+          <Bot className="w-4 h-4 text-[var(--theme-accent-hover)]" />
         </span>
-        <h3 className="text-sm font-semibold text-zinc-900">{item.title}</h3>
+        <h3 className="text-sm font-semibold text-[var(--theme-text)]">
+          {item.title}
+        </h3>
       </div>
-      <p className="text-xs text-zinc-700 line-clamp-2">{item.desc}</p>
+      <p className="text-xs text-[var(--theme-text-muted)] line-clamp-2">
+        {item.desc}
+      </p>
       <div className="mt-2.5 flex flex-wrap gap-1.5">
         {item.tags.map((tag) => (
           <Badge key={tag} label={tag} />
@@ -303,7 +310,7 @@ function TemplateCard({
 
 function WizardStepBar({ step }: { step: number }) {
   return (
-    <div className="px-6 py-2 border-b border-[#dcd6cb] bg-[#f7f4ee] flex items-center gap-5 text-sm overflow-x-auto">
+    <div className="px-6 py-2 border-b border-[var(--theme-border)] bg-[var(--theme-surface-muted)] flex items-center gap-5 text-sm overflow-x-auto">
       {WIZARD_STEPS.map((label, idx) => {
         const i = idx + 1;
         const done = i < step;
@@ -313,19 +320,19 @@ function WizardStepBar({ step }: { step: number }) {
             key={label}
             className={`flex items-center gap-2 whitespace-nowrap ${
               active
-                ? "text-[#1e1e1d] font-semibold"
+                ? "text-[var(--theme-text)] font-semibold"
                 : done
-                  ? "text-[#4f4b44] font-medium"
-                  : "text-[#6f6a61]"
+                  ? "text-[var(--theme-accent-hover)] font-medium"
+                  : "text-[var(--theme-text-muted)]"
             }`}
           >
             <span
               className={`w-4 h-4 rounded-full inline-flex items-center justify-center text-[10px] ${
                 active
-                  ? "bg-[#c8682b] text-white"
+                  ? "bg-[var(--theme-accent-strong)] text-white"
                   : done
-                    ? "bg-[#e7c9b4] text-[#7b3d1c]"
-                    : "bg-[#d6d0c5] text-[#4d4941]"
+                    ? "bg-[rgba(232,245,189,0.52)] text-[var(--theme-accent-hover)]"
+                    : "bg-[var(--theme-page-strong)] text-[var(--theme-text-muted)]"
               }`}
             >
               {done ? <Check className="w-3 h-3" /> : i}
@@ -402,23 +409,25 @@ function BuilderWizard({
 
   return (
     <div className="fixed inset-0 z-[80] bg-black/25 backdrop-blur-[1px] flex items-center justify-center p-3">
-      <div className="w-full max-w-[1050px] h-[95vh] bg-[#f0efeb] rounded-2xl border border-[#ddd9d2] overflow-hidden flex flex-col">
+      <div className="w-full max-w-[1050px] h-[95vh] bg-[var(--theme-page)] rounded-2xl border border-[var(--theme-border)] overflow-hidden flex flex-col">
         {/* Header */}
-        <div className="px-6 py-3 border-b border-[#e4e1dc] flex items-start justify-between">
+        <div className="px-6 py-3 border-b border-[var(--theme-border)] flex items-start justify-between">
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-xl bg-[#c8682b] text-white flex items-center justify-center">
+            <div className="w-9 h-9 rounded-xl bg-[var(--theme-accent-strong)] text-white flex items-center justify-center">
               <Sparkles className="w-4 h-4" />
             </div>
             <div>
-              <h2 className="text-[22px] font-semibold text-[#1f1f1f]">
+              <h2 className="text-[22px] font-semibold text-[var(--theme-accent-strong)]">
                 {STEP_TITLES[step]}
               </h2>
-              <p className="text-xs text-[#8d8a84] mt-1">Step {step} of 6</p>
+              <p className="text-xs text-[var(--theme-accent-hover)] mt-1">
+                Step {step} of 6
+              </p>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-full border border-[#c8c5bf] text-[#8b8b87] flex items-center justify-center hover:bg-[#f6f4ef]"
+            className="w-8 h-8 rounded-full border border-[var(--theme-border)] text-[var(--theme-text-muted)] flex items-center justify-center hover:bg-[var(--theme-surface-muted)]"
           >
             <X className="w-4 h-4" />
           </button>
@@ -431,10 +440,8 @@ function BuilderWizard({
           {/* Step 1 – Purpose */}
           {step === 1 && (
             <div>
-              <p className="text-[#9a4f20] font-bold text-sm">
-                STEP 1 OF 6
-              </p>
-              <p className="text-[#66645f] mt-2 text-base">
+              <p className="text-[var(--theme-accent-strong)] font-bold text-sm">STEP 1 OF 6</p>
+              <p className="text-[var(--theme-accent-strong)] mt-2 text-base">
                 Answer a few quick questions — we&apos;ll use your answers to
                 build the perfect agent.
               </p>
@@ -490,7 +497,7 @@ function BuilderWizard({
                       <button
                         key={s}
                         onClick={() => setData((p) => ({ ...p, mainJob: s }))}
-                        className="px-3 py-1.5 rounded-full border border-[#d9b79e] bg-[#fdf4ec] text-[#c8682b] text-sm"
+                        className="px-3 py-1.5 rounded-full border border-[var(--theme-border)] bg-[var(--theme-accent-soft)] text-[var(--theme-accent-hover)] text-sm"
                       >
                         {s}
                       </button>
@@ -534,9 +541,7 @@ function BuilderWizard({
           {/* Step 2 – System Prompt */}
           {step === 2 && (
             <div>
-              <p className="text-[#9a4f20] font-bold text-sm">
-                STEP 2 OF 6
-              </p>
+              <p className="text-[#9a4f20] font-bold text-sm">STEP 2 OF 6</p>
               <p className="text-[#66645f] mt-2 text-base">
                 The system prompt defines the agent&apos;s persona, scope, and
                 behaviour.
@@ -592,9 +597,7 @@ function BuilderWizard({
           {/* Step 3 – Tools */}
           {step === 3 && (
             <div>
-              <p className="text-[#9a4f20] font-bold text-sm">
-                STEP 3 OF 6
-              </p>
+              <p className="text-[#9a4f20] font-bold text-sm">STEP 3 OF 6</p>
               <p className="text-[#66645f] mt-2 text-base">
                 Equip your agent with tools. Click any tool to see configuration
                 steps.
@@ -669,9 +672,7 @@ function BuilderWizard({
           {/* Step 4 – Memory */}
           {step === 4 && (
             <div>
-              <p className="text-[#9a4f20] font-bold text-sm">
-                STEP 4 OF 6
-              </p>
+              <p className="text-[#9a4f20] font-bold text-sm">STEP 4 OF 6</p>
               <p className="text-[#66645f] mt-2 text-base">
                 Configure short-term (conversation history) and long-term memory
                 (vector store).
@@ -729,9 +730,7 @@ function BuilderWizard({
           {/* Step 5 – Test */}
           {step === 5 && (
             <div>
-              <p className="text-[#9a4f20] font-bold text-sm">
-                STEP 5 OF 6
-              </p>
+              <p className="text-[#9a4f20] font-bold text-sm">STEP 5 OF 6</p>
               <p className="text-[#66645f] mt-2 text-base">
                 Run the agent through test scenarios covering edge cases. Refine
                 based on failures.
@@ -825,9 +824,7 @@ function BuilderWizard({
           {/* Step 6 – Deploy */}
           {step === 6 && (
             <div>
-              <p className="text-[#9a4f20] font-bold text-sm">
-                STEP 6 OF 6
-              </p>
+              <p className="text-[#9a4f20] font-bold text-sm">STEP 6 OF 6</p>
               <p className="text-[#66645f] mt-2 text-base">
                 Get a shareable endpoint or embed widget. Monitor performance in
                 the dashboard.
@@ -899,11 +896,11 @@ function BuilderWizard({
         </div>
 
         {/* Footer */}
-        <div className="px-6 py-4 border-t border-[#e1ddd5] flex items-center justify-between">
+        <div className="px-6 py-4 border-t border-[var(--theme-border)] flex items-center justify-between">
           <button
             onClick={prev}
             disabled={step === 1}
-            className="h-11 px-6 rounded-full border border-[#bcb5aa] bg-white text-[#232220] font-medium disabled:opacity-50"
+            className="h-11 px-6 rounded-full border border-[var(--theme-border)] bg-white text-[var(--theme-text)] font-medium disabled:opacity-50"
           >
             ← Back
           </button>
@@ -912,7 +909,9 @@ function BuilderWizard({
               <span
                 key={idx}
                 className={`h-2.5 rounded-full transition-all ${
-                  step === idx + 1 ? "bg-[#b65a24] w-6" : "bg-[#b8b1a6] w-2.5"
+                  step === idx + 1
+                    ? "bg-[var(--theme-accent-strong)] w-6"
+                    : "bg-[var(--theme-text-muted)] w-2.5"
                 }`}
               />
             ))}
@@ -920,7 +919,7 @@ function BuilderWizard({
           {step < 6 ? (
             <button
               onClick={next}
-              className="h-11 px-7 rounded-full font-semibold bg-[#c8682b] text-white"
+              className="h-11 px-7 rounded-full font-semibold bg-[var(--theme-accent-strong)] text-white"
             >
               Next →
             </button>
@@ -928,7 +927,7 @@ function BuilderWizard({
             <button
               onClick={() => void create()}
               disabled={saving}
-              className="h-11 px-7 rounded-full font-semibold bg-[#c8682b] text-white disabled:opacity-60"
+              className="h-11 px-7 rounded-full font-semibold bg-[var(--theme-accent-strong)] text-white disabled:opacity-60"
             >
               {saving ? "Saving..." : "Create Agent"}
             </button>
@@ -1064,7 +1063,9 @@ function AgentChatPanel({
     try {
       const uploaded =
         uploads && uploads.length > 0
-          ? await ChatService.uploadAttachments(uploads.map((upload) => upload.file))
+          ? await ChatService.uploadAttachments(
+              uploads.map((upload) => upload.file),
+            )
           : [];
 
       socketRef.current?.emit("chat:message", {
@@ -1104,60 +1105,63 @@ function AgentChatPanel({
 
   return (
     <div className="p-3 md:p-4 h-full">
-      <div className="rounded-2xl border border-[#eadfce] bg-gradient-to-r from-[#fff7f2] to-[#fffdf9] p-4 md:p-5 h-full flex flex-col min-h-[78vh]">
+      <div className="rounded-2xl border border-[var(--theme-border)] bg-[linear-gradient(135deg,rgba(232,245,189,0.34),rgba(255,253,247,0.96))] p-4 md:p-5 h-full flex flex-col min-h-[78vh]">
         <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
           <div className="min-w-0">
             <button
               onClick={onBack}
-              className="inline-flex items-center gap-2 rounded-full border border-[#e2d6c6] bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-[#faf6f0]"
+              className="theme-button-secondary inline-flex items-center gap-2 rounded-full px-3 py-1.5 text-xs font-medium"
             >
               <ArrowLeft className="h-3.5 w-3.5" />
               Back to agent overview
             </button>
             <div className="mt-3 flex items-center gap-2">
-              <div className="w-9 h-9 rounded-xl bg-[#c8682b] text-white flex items-center justify-center shrink-0">
+              <div className="w-9 h-9 rounded-xl bg-[var(--theme-accent-strong)] text-white flex items-center justify-center shrink-0">
                 <Bot className="w-4 h-4" />
               </div>
               <div className="min-w-0">
-                <h1 className="text-xl md:text-2xl font-semibold text-zinc-900 truncate">
+                <h1 className="text-xl md:text-2xl font-semibold text-[var(--theme-text)] truncate">
                   {agent.name}
                 </h1>
-                <p className="text-sm text-zinc-700 truncate">
+                <p className="text-sm text-[var(--theme-text-muted)] truncate">
                   {agent.description}
                 </p>
               </div>
             </div>
           </div>
-          <div className="rounded-2xl border border-[#eadfce] bg-white px-4 py-3 text-sm text-zinc-700">
-            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+          <div className="rounded-2xl border border-[var(--theme-border)] bg-[rgba(255,255,255,0.92)] px-4 py-3 text-sm text-[var(--theme-text-muted)]">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-[var(--theme-text-muted)]">
               Active Model
             </p>
-            <p className="mt-1 font-semibold text-zinc-900">
+            <p className="mt-1 font-semibold text-[var(--theme-text)]">
               {agent.modelName ?? "No model selected"}
             </p>
             {agent.modelProvider && (
-              <p className="text-xs text-zinc-500">{agent.modelProvider}</p>
+              <p className="text-xs text-[var(--theme-text-muted)]">
+                {agent.modelProvider}
+              </p>
             )}
           </div>
         </div>
 
-        <div className="mt-4 rounded-2xl border border-[#eadfce] bg-white p-4 flex-1 min-h-0 flex flex-col">
-          <div className="flex-1 min-h-0 overflow-y-auto rounded-2xl border border-zinc-200 bg-zinc-50 p-4 space-y-3">
+        <div className="mt-4 rounded-2xl border border-[var(--theme-border)] bg-[rgba(255,255,255,0.92)] p-4 flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0 overflow-y-auto rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-muted)] p-4 space-y-3">
             {messages.length === 0 ? (
               <div className="h-full flex items-center justify-center">
-                <div className="w-full max-w-2xl bg-white border border-zinc-200 rounded-3xl p-6 text-center">
-                  <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[#E8F5BD]/70 border border-[#84B179]/30 flex items-center justify-center text-[#6a9a5d]">
+                <div className="w-full max-w-2xl bg-[rgba(255,255,255,0.94)] border border-[var(--theme-border)] rounded-3xl p-6 text-center">
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[rgba(232,245,189,0.7)] border border-[var(--theme-border-strong)] flex items-center justify-center text-[var(--theme-accent-hover)]">
                     ✦
                   </div>
-                  <h2 className="text-3xl font-semibold text-zinc-900 mb-2">
+                  <h2 className="text-3xl font-semibold text-[var(--theme-text)] mb-2">
                     Chat with {agent.name}
                   </h2>
-                  <p className="text-sm text-zinc-500 mb-2">
-                    {agent.role} is ready to help inside this dedicated workspace.
+                  <p className="text-sm text-[var(--theme-text-muted)] mb-2">
+                    {agent.role} is ready to help inside this dedicated
+                    workspace.
                   </p>
-                  <p className="text-xs text-zinc-500">
+                  <p className="text-xs text-[var(--theme-text-muted)]">
                     Model:{" "}
-                    <span className="font-semibold text-zinc-700">
+                    <span className="font-semibold text-[var(--theme-text)]">
                       {agent.modelName ?? "Not selected"}
                     </span>
                   </p>
@@ -1170,15 +1174,17 @@ function AgentChatPanel({
                     key={message.id}
                     className={`max-w-[82%] rounded-lg px-4 py-3 text-sm whitespace-pre-wrap ${
                       message.role === "user"
-                        ? "ml-auto bg-[#84B179] text-white"
-                        : "bg-white border border-zinc-200 text-zinc-800"
+                        ? "ml-auto bg-[var(--theme-accent-strong)] text-white"
+                        : "bg-[rgba(255,255,255,0.94)] border border-[var(--theme-border)] text-[var(--theme-text)]"
                     }`}
                   >
                     {message.content}
                     {!!message.attachments?.length && (
                       <div
                         className={`mt-3 flex flex-wrap gap-2 ${
-                          message.role === "user" ? "text-white/90" : "text-zinc-700"
+                          message.role === "user"
+                            ? "text-white/90"
+                            : "text-[var(--theme-text-muted)]"
                         }`}
                       >
                         {message.attachments.map((attachment) => (
@@ -1187,7 +1193,7 @@ function AgentChatPanel({
                             className={`rounded-lg border px-2 py-1 text-xs ${
                               message.role === "user"
                                 ? "border-white/25 bg-white/10"
-                                : "border-zinc-200 bg-white"
+                                : "border-[var(--theme-border)] bg-[rgba(255,255,255,0.92)]"
                             }`}
                           >
                             {(attachment.kind === "image" ||
@@ -1220,7 +1226,9 @@ function AgentChatPanel({
                   </div>
                 ))}
                 {(sending || isTyping) && (
-                  <p className="text-sm text-zinc-500">{t("common.assistantTyping")}</p>
+                  <p className="text-sm text-[var(--theme-text-muted)]">
+                    {t("common.assistantTyping")}
+                  </p>
                 )}
               </>
             )}
@@ -1238,9 +1246,9 @@ function AgentChatPanel({
               tabRedirectToChatHub={true}
               disabled={sending}
             />
-            <p className="mt-2 text-xs text-zinc-500">
+            <p className="mt-2 text-xs text-[var(--theme-text-muted)]">
               Responses are generated with{" "}
-              <span className="font-semibold text-zinc-700">
+              <span className="font-semibold text-[var(--theme-text)]">
                 {agent.modelName ?? "the assigned model"}
               </span>
               {agent.modelProvider ? ` by ${agent.modelProvider}` : ""}.
@@ -1298,36 +1306,40 @@ export default function AgentsPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f4f3ef]">
+    <div className="min-h-screen flex flex-col theme-page">
       <Header />
       <main className="flex-1 pt-24 px-2 sm:px-3 lg:px-4 pb-4">
         <div className="grid grid-cols-1 xl:grid-cols-[240px_minmax(0,1fr)] gap-3">
           {/* Sidebar */}
-          <aside className="rounded-2xl border border-[#e7e1d7] bg-white p-3 h-fit xl:sticky xl:top-24">
+          <aside className="theme-panel rounded-2xl p-3 h-fit xl:sticky xl:top-24">
             <div className="flex items-center gap-2 mb-3">
-              <div className="w-8 h-8 rounded-lg bg-[#fbefe5] text-[#c55f23] inline-flex items-center justify-center">
+              <div className="w-8 h-8 rounded-lg bg-[rgba(232,245,189,0.45)] text-[var(--theme-accent-strong)] inline-flex items-center justify-center">
                 <Sparkles className="w-4 h-4" />
               </div>
               <div>
-                <p className="text-sm font-semibold text-zinc-900">
+                <p className="text-sm font-semibold text-[var(--theme-text)]">
                   Agent Builder
                 </p>
-                <p className="text-[11px] text-zinc-700">
+                <p className="text-[11px] text-[var(--theme-text-muted)]">
                   Create AI agents from scratch
                 </p>
               </div>
             </div>
 
-            <p className="text-xs text-zinc-700 px-1 mb-2">Your Agents</p>
+            <p className="text-xs text-[var(--theme-text-muted)] px-1 mb-2">
+              Your Agents
+            </p>
 
             {loadingAgents && (
-              <p className="text-xs text-zinc-600 mb-2">Loading agents...</p>
+              <p className="text-xs text-[var(--theme-text-muted)] mb-2">
+                Loading agents...
+              </p>
             )}
             {agentsError && (
               <p className="text-xs text-rose-600 mb-2">{agentsError}</p>
             )}
             {!loadingAgents && agents.length === 0 && (
-              <p className="text-xs text-zinc-600 mb-2">
+              <p className="text-xs text-[var(--theme-text-muted)] mb-2">
                 No agents yet. Create your first one.
               </p>
             )}
@@ -1339,25 +1351,25 @@ export default function AgentsPage() {
                   onClick={() => setActiveAgentId(agent.id)}
                   className={`w-full text-left px-2.5 py-2 rounded-lg border transition-colors ${
                     activeAgentId === agent.id
-                      ? "bg-[#fff3ea] border-[#efcfb8]"
-                      : "bg-white border-transparent hover:bg-[#f7f4ef]"
+                      ? "bg-[rgba(232,245,189,0.32)] border-[var(--theme-border-strong)]"
+                      : "bg-[rgba(255,255,255,0.88)] border-transparent hover:bg-[var(--theme-surface-muted)]"
                   }`}
                 >
                   <div className="flex items-center justify-between gap-2">
-                    <p className="text-xs font-medium text-zinc-800">
+                    <p className="text-xs font-medium text-[var(--theme-text)]">
                       {agent.name}
                     </p>
                     <span
                       className={`text-[10px] px-1.5 py-0.5 rounded-full ${
                         agent.status === "Live"
-                          ? "bg-emerald-100 text-emerald-700"
-                          : "bg-zinc-200 text-zinc-700"
+                          ? "bg-[rgba(232,245,189,0.45)] text-[var(--theme-accent-hover)]"
+                          : "bg-[var(--theme-surface-muted)] text-[var(--theme-text-muted)]"
                       }`}
                     >
                       {agent.status}
                     </span>
                   </div>
-                  <p className="text-[11px] text-zinc-600 mt-0.5">
+                  <p className="text-[11px] text-[var(--theme-text-muted)] mt-0.5">
                     {agent.role}
                   </p>
                 </button>
@@ -1366,21 +1378,21 @@ export default function AgentsPage() {
 
             <button
               onClick={() => setShowBuilder(true)}
-              className="w-full bg-[#d56a2f] hover:bg-[#bf5d29] text-white rounded-xl py-2 text-sm font-medium mb-3"
+              className="theme-button-primary w-full rounded-xl py-2 text-sm font-medium mb-3"
             >
               + New Agent
             </button>
 
-            <div className="rounded-xl border border-[#eee8de] bg-[#faf8f4] p-3">
-              <p className="text-xs font-semibold text-zinc-700 mb-1">
+            <div className="theme-panel-muted rounded-xl p-3">
+              <p className="text-xs font-semibold text-[var(--theme-text)] mb-1">
                 Not sure where to start?
               </p>
-              <p className="text-[11px] text-zinc-700 mb-2">
+              <p className="text-[11px] text-[var(--theme-text-muted)] mb-2">
                 Ask Hub for guidance and generate your starter workflow.
               </p>
               <button
                 onClick={() => router.push("/chat-hub")}
-                className="text-xs rounded-full border border-[#d9d0c2] text-zinc-700 px-2.5 py-1 bg-white"
+                className="theme-button-secondary text-xs rounded-full px-2.5 py-1"
               >
                 Ask the Hub
               </button>
@@ -1388,7 +1400,7 @@ export default function AgentsPage() {
           </aside>
 
           {/* Main content */}
-          <section className="rounded-2xl border border-[#e7e1d7] bg-white min-h-[78vh] overflow-hidden">
+          <section className="theme-panel rounded-2xl min-h-[78vh] overflow-hidden">
             {shouldShowAgentChat && activeAgentData ? (
               <AgentChatPanel
                 key={activeAgentData.id}
@@ -1398,20 +1410,20 @@ export default function AgentsPage() {
             ) : (
               <div className="p-3 md:p-4 space-y-4">
                 {/* Hero banner */}
-                <div className="rounded-2xl border border-[#eadfce] bg-gradient-to-r from-[#fff7f2] to-[#fffdf9] p-4 md:p-5">
+                <div className="rounded-2xl border border-[var(--theme-border)] bg-[linear-gradient(135deg,rgba(232,245,189,0.34),rgba(255,253,247,0.96))] p-4 md:p-5">
                   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
                     <div>
-                      <h1 className="text-xl md:text-2xl font-semibold text-zinc-900">
+                      <h1 className="text-xl md:text-2xl font-semibold text-[var(--theme-text)]">
                         Build your AI Agent in minutes
                       </h1>
-                      <p className="text-sm text-zinc-700 mt-1">
+                      <p className="text-sm text-[var(--theme-text-muted)] mt-1">
                         Pick a template, customize the behavior, and deploy
                         instantly.
                       </p>
                     </div>
                     <button
                       onClick={() => setShowBuilder(true)}
-                      className="self-start md:self-auto rounded-full px-4 py-2 text-sm font-medium bg-[#d56a2f] text-white hover:bg-[#bf5d29]"
+                      className="theme-button-primary self-start md:self-auto rounded-full px-4 py-2 text-sm font-medium"
                     >
                       Start Building
                     </button>
@@ -1426,10 +1438,10 @@ export default function AgentsPage() {
                     ].map((item) => (
                       <div
                         key={item.label}
-                        className="rounded-xl border border-[#eadfce] bg-white px-3 py-2.5 flex items-center gap-2"
+                        className="rounded-xl border border-[var(--theme-border)] bg-[rgba(255,255,255,0.9)] px-3 py-2.5 flex items-center gap-2"
                       >
-                        <item.icon className="w-4 h-4 text-[#c55f23]" />
-                        <span className="text-xs font-medium text-zinc-800">
+                        <item.icon className="w-4 h-4 text-[var(--theme-accent-strong)]" />
+                        <span className="text-xs font-medium text-[var(--theme-text)]">
                           {item.label}
                         </span>
                       </div>
@@ -1438,21 +1450,23 @@ export default function AgentsPage() {
                 </div>
 
                 {activeAgentData && (
-                  <div className="rounded-xl border border-[#eadfce] bg-[#fffdf9] p-4">
-                    <p className="text-xs text-zinc-600">Selected agent</p>
+                  <div className="rounded-xl border border-[var(--theme-border)] bg-[rgba(255,255,255,0.9)] p-4">
+                    <p className="text-xs text-[var(--theme-text-muted)]">
+                      Selected agent
+                    </p>
                     <div className="mt-1 flex items-center gap-2">
-                      <Bot className="w-4 h-4 text-[#c55f23]" />
-                      <p className="text-lg font-semibold">
+                      <Bot className="w-4 h-4 text-[var(--theme-accent-strong)]" />
+                      <p className="text-lg font-semibold text-[var(--theme-text)]">
                         {activeAgentData.name}
                       </p>
-                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#f2eee6]">
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[var(--theme-surface-muted)] text-[var(--theme-text-muted)]">
                         {activeAgentData.role}
                       </span>
                     </div>
-                    <p className="text-xs text-zinc-600 mt-2">
+                    <p className="text-xs text-[var(--theme-text-muted)] mt-2">
                       Status: {activeAgentData.status}
                     </p>
-                    <p className="text-xs text-zinc-600">
+                    <p className="text-xs text-[var(--theme-text-muted)]">
                       Created:{" "}
                       {new Date(activeAgentData.createdAt).toLocaleString()}
                     </p>
@@ -1466,7 +1480,7 @@ export default function AgentsPage() {
 
                 <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-3">
                   <div>
-                    <p className="text-[11px] font-semibold text-zinc-700 mb-2">
+                    <p className="text-[11px] font-semibold text-[var(--theme-text-muted)] mb-2">
                       AGENT TEMPLATES
                     </p>
                     <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
@@ -1480,40 +1494,40 @@ export default function AgentsPage() {
                       ))}
                       <button
                         onClick={() => setShowBuilder(true)}
-                        className="rounded-xl border border-[#eadfd4] bg-[#fcf5ee] p-3 text-zinc-700 min-h-[146px] hover:shadow-sm text-left"
+                        className="theme-panel-muted rounded-xl p-3 text-[var(--theme-text-muted)] min-h-[146px] hover:shadow-sm text-left"
                       >
                         <div className="text-2xl mb-2">+</div>
                         <div className="text-sm font-medium">
                           {t("agents.buildFromScratch")}
                         </div>
-                        <p className="text-xs text-zinc-700 mt-1">
+                        <p className="text-xs text-[var(--theme-text-muted)] mt-1">
                           {t("agents.buildFromScratchDesc")}
                         </p>
                       </button>
                     </div>
                   </div>
 
-                  <aside className="rounded-xl border border-[#ece6db] bg-[#faf8f4] p-3 space-y-3 h-fit">
-                    <p className="text-xs font-semibold text-zinc-700">
+                  <aside className="theme-panel-muted rounded-xl p-3 space-y-3 h-fit">
+                    <p className="text-xs font-semibold text-[var(--theme-text)]">
                       TEMPLATE DETAILS
                     </p>
-                    <div className="rounded-lg bg-white border border-[#e6dfd2] p-3">
+                    <div className="rounded-lg bg-[rgba(255,255,255,0.92)] border border-[var(--theme-border)] p-3">
                       <div className="flex items-center gap-2 mb-2">
                         <span
                           className={`w-8 h-8 rounded-lg ${selectedTemplate.color} inline-flex items-center justify-center`}
                         >
-                          <Bot className="w-4 h-4 text-zinc-700" />
+                          <Bot className="w-4 h-4 text-[var(--theme-accent-hover)]" />
                         </span>
                         <div>
-                          <p className="text-sm font-semibold text-zinc-900">
+                          <p className="text-sm font-semibold text-[var(--theme-text)]">
                             {selectedTemplate.title}
                           </p>
-                          <p className="text-xs text-zinc-600">
+                          <p className="text-xs text-[var(--theme-text-muted)]">
                             Ready-to-use workflow
                           </p>
                         </div>
                       </div>
-                      <p className="text-xs text-zinc-700 leading-relaxed">
+                      <p className="text-xs text-[var(--theme-text-muted)] leading-relaxed">
                         {selectedTemplate.desc}
                       </p>
                       <div className="mt-2.5 flex flex-wrap gap-1.5">
@@ -1522,37 +1536,37 @@ export default function AgentsPage() {
                         ))}
                       </div>
                     </div>
-                    <div className="rounded-lg bg-white border border-[#e6dfd2] p-3">
-                      <p className="text-xs font-semibold text-zinc-800 mb-2">
+                    <div className="rounded-lg bg-[rgba(255,255,255,0.92)] border border-[var(--theme-border)] p-3">
+                      <p className="text-xs font-semibold text-[var(--theme-text)] mb-2">
                         Best for
                       </p>
-                      <div className="space-y-1.5 text-xs text-zinc-700">
+                      <div className="space-y-1.5 text-xs text-[var(--theme-text-muted)]">
                         <div className="flex items-center gap-2">
-                          <Briefcase className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
+                          <Briefcase className="w-3.5 h-3.5 text-[var(--theme-accent-strong)]" />{" "}
                           Business automation
                         </div>
                         <div className="flex items-center gap-2">
-                          <Code2 className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
+                          <Code2 className="w-3.5 h-3.5 text-[var(--theme-accent-strong)]" />{" "}
                           Developer assistants
                         </div>
                         <div className="flex items-center gap-2">
-                          <Megaphone className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
+                          <Megaphone className="w-3.5 h-3.5 text-[var(--theme-accent-strong)]" />{" "}
                           Content and growth workflows
                         </div>
                       </div>
                     </div>
                     <button
                       onClick={() => setShowBuilder(true)}
-                      className="w-full rounded-xl bg-[#d56a2f] text-white text-sm font-medium py-2 hover:bg-[#bf5d29]"
+                      className="theme-button-primary w-full rounded-xl text-sm font-medium py-2"
                     >
                       Use this Template
                     </button>
-                    <button className="w-full rounded-xl border border-[#d9d0c2] text-zinc-700 text-sm font-medium py-2 bg-white hover:bg-[#f8f5ef]">
+                    <button className="theme-button-secondary w-full rounded-xl text-sm font-medium py-2">
                       Preview Workflow
                     </button>
-                    <div className="rounded-lg border border-[#e6dfd2] bg-white p-2.5 text-[11px] text-zinc-600">
-                      Tip: Start with a template, then customize tools, memory and
-                      response style.
+                    <div className="rounded-lg border border-[var(--theme-border)] bg-[rgba(255,255,255,0.92)] p-2.5 text-[11px] text-[var(--theme-text-muted)]">
+                      Tip: Start with a template, then customize tools, memory
+                      and response style.
                     </div>
                   </aside>
                 </div>

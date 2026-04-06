@@ -180,55 +180,55 @@ const comparisonData = [
 
 export default function ModelComparison() {
   return (
-    <section className="bg-[#f9f9f8] py-12 px-12 font-sans">
+    <section className="bg-transparent py-12 px-12 font-sans">
       <div className=" mx-auto">
         {/* Header */}
         <div className="flex justify-between items-end mb-4">
           <div>
-            <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+            <h2 className="text-3xl font-bold text-[var(--theme-text)] tracking-tight">
               Flagship Model Comparison
             </h2>
-            <p className="text-zinc-500 text-sm mt-3">
+            <p className="text-[var(--theme-text-muted)] text-sm mt-3">
               Side-by-side view of the leading models across all major labs.
               Input/Output prices per 1M tokens.
             </p>
           </div>
           <Link
             href={"/marketplace"}
-            className="text-[11px] font-bold text-[#BC6D25] flex items-center hover:underline"
+            className="text-[11px] font-bold theme-link flex items-center hover:underline"
           >
             Compare all <ChevronRight className="w-3 h-3 ml-0.5" />
           </Link>
         </div>
 
         {/* Table Container */}
-        <div className="bg-white border border-zinc-200 rounded-[1.5rem] overflow-hidden shadow-sm">
+        <div className="theme-panel rounded-[1.5rem] overflow-hidden">
           <div className="overflow-x-auto">
             <table className="w-full text-left border-collapse">
               <thead>
-                <tr className="border-b border-zinc-100">
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                <tr className="border-b border-[var(--theme-border)]">
+                  <th className="px-6 py-5 text-[10px] font-black text-[var(--theme-text-muted)] uppercase tracking-widest">
                     Model
                   </th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                  <th className="px-6 py-5 text-[10px] font-black text-[var(--theme-text-muted)] uppercase tracking-widest">
                     Lab
                   </th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                  <th className="px-6 py-5 text-[10px] font-black text-[var(--theme-text-muted)] uppercase tracking-widest">
                     Context
                   </th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                  <th className="px-6 py-5 text-[10px] font-black text-[var(--theme-text-muted)] uppercase tracking-widest">
                     Input $/1M
                   </th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                  <th className="px-6 py-5 text-[10px] font-black text-[var(--theme-text-muted)] uppercase tracking-widest">
                     Output $/1M
                   </th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest text-center">
+                  <th className="px-6 py-5 text-[10px] font-black text-[var(--theme-text-muted)] uppercase tracking-widest text-center">
                     Multimodal
                   </th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                  <th className="px-6 py-5 text-[10px] font-black text-[var(--theme-text-muted)] uppercase tracking-widest">
                     Speed
                   </th>
-                  <th className="px-6 py-5 text-[10px] font-black text-zinc-400 uppercase tracking-widest">
+                  <th className="px-6 py-5 text-[10px] font-black text-[var(--theme-text-muted)] uppercase tracking-widest">
                     Best For
                   </th>
                 </tr>

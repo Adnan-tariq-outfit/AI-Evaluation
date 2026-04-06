@@ -101,7 +101,8 @@ export default function ChatHubPage() {
       const safe = messages.map((m) => ({
         ...m,
         attachments: m.attachments?.map((a) => {
-          const { previewUrl, ...rest } = a;
+          const rest = { ...a };
+          delete rest.previewUrl;
           return rest;
         }),
       }));
@@ -304,19 +305,19 @@ export default function ChatHubPage() {
   };
 
   return (
-    <div className="h-[100dvh] flex flex-col bg-[#f9f9f8] overflow-hidden">
+    <div className="h-[100dvh] flex flex-col theme-page overflow-hidden">
       <Header />
       <main className="flex-1 mt-20 px-3 sm:px-4 lg:px-6 pb-3 overflow-hidden">
         <div className="grid grid-cols-1 xl:grid-cols-[270px_1fr_270px] gap-4 h-full min-h-0">
-          <aside className="bg-white border h-full min-h-0 border-zinc-200 rounded-xl p-3 overflow-hidden">
-            <p className="text-xs font-semibold text-zinc-500 mb-2">
+          <aside className="theme-panel h-full min-h-0 rounded-xl p-3 overflow-hidden">
+            <p className="text-xs font-semibold text-[var(--theme-text-muted)] mb-2">
               {t("common.models")}
             </p>
             <input
               value={modelSearch}
               onChange={(e) => setModelSearch(e.target.value)}
               placeholder={t("common.searchModels", { count: models.length })}
-              className="w-full mb-3 px-3 py-2 text-sm border border-zinc-300 rounded-xl bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179]"
+              className="theme-input w-full mb-3 px-3 py-2 text-sm rounded-xl"
             />
             <div className="space-y-1 h-full overflow-y-auto pr-1">
               {filteredModels.map((m) => (
@@ -325,17 +326,17 @@ export default function ChatHubPage() {
                   onClick={() => setSelectedModelId(m._id)}
                   className={`w-full text-left px-2 py-2 rounded-lg border text-sm ${
                     selectedModelId === m._id
-                      ? "bg-[#f6eadf] border-[#e5c3a5] text-[#8d5b30]"
-                      : "bg-white border-zinc-200 hover:bg-zinc-50 text-zinc-700"
+                      ? "bg-[rgba(232,245,189,0.34)] border-[var(--theme-border-strong)] text-[var(--theme-accent-hover)]"
+                      : "bg-[rgba(255,255,255,0.88)] border-[var(--theme-border)] hover:bg-[var(--theme-surface-muted)] text-[var(--theme-text-muted)]"
                   }`}
                 >
                   <div className="font-medium flex items-center gap-2">
-                    <span className="w-5 h-5 rounded-md bg-zinc-100 inline-flex items-center justify-center text-xs">
+                    <span className="w-5 h-5 rounded-md bg-[var(--theme-surface-muted)] inline-flex items-center justify-center text-xs">
                       {m.name[0]}
                     </span>
                     {m.name}
                   </div>
-                  <div className="text-xs text-zinc-500 ml-7">
+                  <div className="text-xs text-[var(--theme-text-muted)] ml-7">
                     ● {m.provider}
                   </div>
                 </button>
@@ -343,25 +344,25 @@ export default function ChatHubPage() {
             </div>
           </aside>
 
-          <section className="bg-white border border-zinc-200 rounded-xl p-4 flex flex-col min-h-0 overflow-hidden">
+          <section className="theme-panel rounded-xl p-4 flex flex-col min-h-0 overflow-hidden">
             <div
               ref={messagesContainerRef}
-              className="border border-zinc-200 rounded-xl bg-zinc-50 p-4 flex-1 min-h-0 overflow-y-auto space-y-3"
+              className="border border-[var(--theme-border)] rounded-xl bg-[var(--theme-surface-muted)] p-4 flex-1 min-h-0 overflow-y-auto space-y-3"
             >
               {messages.length === 0 ? (
                 <div className="h-full flex items-center justify-center">
-                  <div className="w-full max-w-2xl bg-white border border-zinc-200 rounded-3xl p-6 text-center">
-                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[#E8F5BD]/70 border border-[#84B179]/30 flex items-center justify-center text-[#6a9a5d]">
+                  <div className="w-full max-w-2xl bg-[rgba(255,255,255,0.94)] border border-[var(--theme-border)] rounded-3xl p-6 text-center">
+                    <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[rgba(232,245,189,0.7)] border border-[var(--theme-border-strong)] flex items-center justify-center text-[var(--theme-accent-hover)]">
                       ✦
                     </div>
-                    <h1 className="text-3xl font-semibold text-zinc-900 mb-2">
+                    <h1 className="text-3xl font-semibold text-[var(--theme-text)] mb-2">
                       {t("chat.welcomeTitle")}
                     </h1>
-                    <p className="text-sm text-zinc-500 mb-6">
+                    <p className="text-sm text-[var(--theme-text-muted)] mb-6">
                       {t("chat.welcomeBody")}
                     </p>
-                    <div className="bg-zinc-50 border border-zinc-200 rounded-2xl p-4">
-                      <p className="text-[11px] font-semibold text-[#6a9a5d] mb-3">
+                    <div className="bg-[var(--theme-surface-muted)] border border-[var(--theme-border)] rounded-2xl p-4">
+                      <p className="text-[11px] font-semibold text-[var(--theme-accent-hover)] mb-3">
                         ✨ {t("chat.whatDoYouWant")}
                       </p>
                       <div className="grid grid-cols-2 sm:grid-cols-3 gap-2">
@@ -369,9 +370,9 @@ export default function ChatHubPage() {
                           <button
                             key={key}
                             onClick={() => sendMessage(t(key))}
-                            className="text-left bg-white border border-zinc-200 rounded-xl p-3 hover:bg-zinc-50"
+                            className="text-left bg-[rgba(255,255,255,0.92)] border border-[var(--theme-border)] rounded-xl p-3 hover:bg-[var(--theme-surface-soft)]"
                           >
-                            <p className="text-sm font-semibold text-zinc-800">
+                            <p className="text-sm font-semibold text-[var(--theme-text)]">
                               {t(key)}
                             </p>
                           </button>
@@ -387,8 +388,8 @@ export default function ChatHubPage() {
                       key={m.id}
                       className={`max-w-[82%] rounded-lg px-4 py-3 text-sm whitespace-pre-wrap ${
                         m.role === "user"
-                          ? "ml-auto bg-[#84B179] text-white"
-                          : "bg-white border border-zinc-200 text-zinc-800"
+                          ? "ml-auto bg-[var(--theme-accent-strong)] text-white"
+                          : "bg-[rgba(255,255,255,0.94)] border border-[var(--theme-border)] text-[var(--theme-text)]"
                       }`}
                     >
                       {m.content}
@@ -397,7 +398,7 @@ export default function ChatHubPage() {
                           className={`mt-3 flex flex-wrap gap-2 ${
                             m.role === "user"
                               ? "text-white/90"
-                              : "text-zinc-700"
+                              : "text-[var(--theme-text-muted)]"
                           }`}
                         >
                           {m.attachments.map((a) => (
@@ -406,7 +407,7 @@ export default function ChatHubPage() {
                               className={`rounded-lg border px-2 py-1 text-xs ${
                                 m.role === "user"
                                   ? "border-white/25 bg-white/10"
-                                  : "border-zinc-200 bg-white"
+                                  : "border-[var(--theme-border)] bg-[rgba(255,255,255,0.92)]"
                               }`}
                             >
                               {(a.kind === "image" || a.kind === "video") &&
@@ -435,7 +436,7 @@ export default function ChatHubPage() {
                     </div>
                   ))}
                   {(sending || isTyping) && (
-                    <p className="text-sm text-zinc-500">
+                    <p className="text-sm text-[var(--theme-text-muted)]">
                       {t("common.assistantTyping")}
                     </p>
                   )}
@@ -456,9 +457,9 @@ export default function ChatHubPage() {
                 disabled={sending}
               />
               {selectedModel && (
-                <p className="mt-2 text-xs text-zinc-500">
+                <p className="mt-2 text-xs text-[var(--theme-text-muted)]">
                   {t("chat.selectedModel")}:{" "}
-                  <span className="font-semibold text-zinc-700">
+                  <span className="font-semibold text-[var(--theme-text)]">
                     {selectedModel.name}
                   </span>
                 </p>
@@ -466,13 +467,13 @@ export default function ChatHubPage() {
             </div>
           </section>
 
-          <aside className="bg-white border border-zinc-200 rounded-xl p-3 h-full min-h-0 overflow-y-auto">
-            <p className="text-xs font-semibold text-zinc-500 mb-2">
+          <aside className="theme-panel rounded-xl p-3 h-full min-h-0 overflow-y-auto">
+            <p className="text-xs font-semibold text-[var(--theme-text-muted)] mb-2">
               {t("common.quickActions")}
             </p>
             <div className="space-y-3">
               <div>
-                <p className="text-[11px] font-semibold text-zinc-500 mb-2">
+                <p className="text-[11px] font-semibold text-[var(--theme-text-muted)] mb-2">
                   {t("chat.navigationTools")}
                 </p>
                 <div className="space-y-1">
@@ -482,7 +483,7 @@ export default function ChatHubPage() {
                       onClick={() => {
                         void handleNavigationAction(key);
                       }}
-                      className="w-full text-left px-2.5 py-2 rounded-lg border border-zinc-200 text-sm text-zinc-700 hover:bg-zinc-50"
+                      className="w-full text-left px-2.5 py-2 rounded-lg border border-[var(--theme-border)] text-sm text-[var(--theme-text-muted)] hover:bg-[var(--theme-surface-muted)]"
                     >
                       {t(key)}
                     </button>
@@ -491,7 +492,7 @@ export default function ChatHubPage() {
               </div>
 
               <div>
-                <p className="text-[11px] font-semibold text-zinc-500 mb-2">
+                <p className="text-[11px] font-semibold text-[var(--theme-text-muted)] mb-2">
                   {t("chat.createGenerate")}
                 </p>
                 <div className="space-y-1">
@@ -501,7 +502,7 @@ export default function ChatHubPage() {
                       onClick={() => {
                         void sendQuickActionPrompt(t(key));
                       }}
-                      className="w-full text-left px-2.5 py-2 rounded-lg border border-zinc-200 text-sm text-zinc-700 hover:bg-zinc-50"
+                      className="w-full text-left px-2.5 py-2 rounded-lg border border-[var(--theme-border)] text-sm text-[var(--theme-text-muted)] hover:bg-[var(--theme-surface-muted)]"
                     >
                       {t(key)}
                     </button>
@@ -510,7 +511,7 @@ export default function ChatHubPage() {
               </div>
 
               <div>
-                <p className="text-[11px] font-semibold text-zinc-500 mb-2">
+                <p className="text-[11px] font-semibold text-[var(--theme-text-muted)] mb-2">
                   {t("chat.analyzeWrite")}
                 </p>
                 <div className="space-y-1">
@@ -520,7 +521,7 @@ export default function ChatHubPage() {
                       onClick={() => {
                         void sendQuickActionPrompt(t(key));
                       }}
-                      className="w-full text-left px-2.5 py-2 rounded-lg border border-zinc-200 text-sm text-zinc-700 hover:bg-zinc-50"
+                      className="w-full text-left px-2.5 py-2 rounded-lg border border-[var(--theme-border)] text-sm text-[var(--theme-text-muted)] hover:bg-[var(--theme-surface-muted)]"
                     >
                       {t(key)}
                     </button>

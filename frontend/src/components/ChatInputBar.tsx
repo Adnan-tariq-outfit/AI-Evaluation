@@ -82,10 +82,10 @@ function IconButton({
     <button
       type="button"
       onClick={onClick}
-      className={`relative flex h-9 w-9 items-center justify-center rounded-full border text-zinc-600 transition-colors ${
+      className={`relative flex h-9 w-9 items-center justify-center rounded-full border text-[var(--theme-text-muted)] transition-colors ${
         active
-          ? "border-[#84B179] bg-[#e9f4de] text-[#567544]"
-          : "border-zinc-200 bg-white hover:bg-zinc-50"
+          ? "border-[var(--theme-border-strong)] bg-[rgba(232,245,189,0.55)] text-[var(--theme-accent-hover)]"
+          : "border-[var(--theme-border)] bg-[rgba(255,255,255,0.9)] hover:bg-[var(--theme-surface-muted)]"
       }`}
       title={label}
     >
@@ -267,11 +267,11 @@ export function ChatInputBar({
   const renderUploads = () => {
     if (!uploads.length) return null;
     return (
-      <div className="mt-2 flex flex-wrap gap-2 text-xs text-zinc-600">
+      <div className="mt-2 flex flex-wrap gap-2 text-xs text-[var(--theme-text-muted)]">
         {uploads.map((u) => (
           <div
             key={u.id}
-            className="inline-flex items-center gap-2 rounded-full border border-zinc-200 bg-zinc-50 px-2 py-1"
+            className="inline-flex items-center gap-2 rounded-full border border-[var(--theme-border)] bg-[var(--theme-surface-muted)] px-2 py-1"
           >
             {u.type === "image" && imagePreviewUrls[u.id] ? (
               <img
@@ -298,8 +298,8 @@ export function ChatInputBar({
   };
 
   return (
-    <div className="w-full rounded-2xl border border-zinc-200 bg-white p-3 shadow-sm shadow-zinc-100">
-      <div className="flex items-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
+    <div className="w-full rounded-2xl border border-[var(--theme-border)] bg-[rgba(255,255,255,0.94)] p-3 shadow-sm shadow-[rgba(88,114,72,0.08)]">
+      <div className="flex items-center gap-2 rounded-2xl border border-[var(--theme-border)] bg-[var(--theme-surface-muted)] px-3 py-2">
         <div className="flex items-center gap-1">
           <IconButton
             label={isRecording ? t("input.stopVoice") : t("input.startVoice")}
@@ -307,7 +307,9 @@ export function ChatInputBar({
             icon={
               <Mic
                 className={`h-4 w-4 ${
-                  isRecording ? "text-red-500" : "text-zinc-600"
+                  isRecording
+                    ? "text-[var(--theme-danger)]"
+                    : "text-[var(--theme-text-muted)]"
                 }`}
               />
             }
@@ -351,14 +353,14 @@ export function ChatInputBar({
             e.preventDefault();
             handleSubmit();
           }}
-          className="ml-2 flex-1 border-none bg-transparent text-sm text-zinc-900 placeholder:text-zinc-400 focus:outline-none"
+          className="ml-2 flex-1 border-none bg-transparent text-sm text-[var(--theme-text)] placeholder:text-[var(--theme-text-muted)] focus:outline-none"
         />
 
         <button
           type="button"
           onClick={handleSubmit}
           disabled={disabled}
-          className="ml-2 inline-flex items-center rounded-full bg-[#84B179] px-4 py-1.5 text-sm font-semibold text-white shadow-sm  disabled:opacity-50 disabled:cursor-not-allowed"
+          className="theme-button-primary ml-2 inline-flex items-center rounded-full px-4 py-1.5 text-sm font-semibold shadow-sm disabled:opacity-50 disabled:cursor-not-allowed"
         >
           {t("input.letsGo")}
         </button>
@@ -366,7 +368,7 @@ export function ChatInputBar({
 
       {renderUploads()}
 
-      <div className="mt-3 border border-zinc-200 rounded-xl p-3 bg-white">
+      <div className="mt-3 border border-[var(--theme-border)] rounded-xl p-3 bg-[rgba(255,255,255,0.92)]">
         <div className="flex gap-2 overflow-x-auto pb-2">
           {tabs.map((tab) => (
             <button
@@ -377,8 +379,8 @@ export function ChatInputBar({
               }}
               className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap ${
                 activeTab === tab
-                  ? "bg-[#84B179] text-white"
-                  : "bg-zinc-50 text-zinc-600 border border-zinc-200"
+                  ? "bg-[var(--theme-accent-strong)] text-white"
+                  : "bg-[var(--theme-surface-muted)] text-[var(--theme-text-muted)] border border-[var(--theme-border)]"
               }`}
             >
               {tab}
@@ -395,7 +397,7 @@ export function ChatInputBar({
                 if (onSuggestionSelect) onSuggestionSelect(text);
                 else onChange(text);
               }}
-              className="text-left text-xs text-zinc-600 hover:text-zinc-900"
+              className="text-left text-xs text-[var(--theme-text-muted)] hover:text-[var(--theme-text)]"
             >
               • {text}
             </button>

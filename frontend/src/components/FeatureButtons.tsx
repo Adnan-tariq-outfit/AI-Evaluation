@@ -23,96 +23,79 @@ import { useI18n } from "./I18nProvider";
 interface FeatureButton {
   icon: React.ReactNode;
   labelKey: string;
-  color: string;
-  bgColor: string;
+  variant: "solid" | "dashed";
 }
 
 const features: FeatureButton[] = [
   {
     icon: <Palette className="w-5 h-5" />,
     labelKey: "feature.createImage",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <Music className="w-5 h-5" />,
     labelKey: "feature.generateAudio",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <Video className="w-5 h-5" />,
     labelKey: "feature.createVideo",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <Presentation className="w-5 h-5" />,
     labelKey: "feature.createSlides",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <BarChart3 className="w-5 h-5" />,
     labelKey: "feature.createInfographs",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <HelpCircle className="w-5 h-5" />,
     labelKey: "feature.createQuiz",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <Files className="w-5 h-5" />,
     labelKey: "feature.createFlashcards",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <Brain className="w-5 h-5" />,
     labelKey: "feature.createMindMap",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <LineChart className="w-5 h-5" />,
     labelKey: "feature.analyzeData",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <PencilLine className="w-5 h-5" />,
     labelKey: "feature.writeContent",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <Code2 className="w-5 h-5" />,
     labelKey: "feature.codeGeneration",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <FileText className="w-5 h-5" />,
     labelKey: "feature.documentAnalysis",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <Globe className="w-5 h-5" />,
     labelKey: "feature.translate",
-    color: "text-[#84B179]",
-    bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
+    variant: "solid",
   },
   {
     icon: <Telescope className="w-5 h-5" />,
     labelKey: "feature.justExploring",
-    color: "text-[#84B179]",
-    // Note: In the image, this button has a dashed border
-    bgColor:
-      "bg-transparent border-2 border-dashed border-zinc-200 hover:bg-zinc-50",
+    variant: "dashed",
   },
 ];
 
@@ -140,7 +123,7 @@ const itemVariants = {
 export default function FeatureButtons() {
   const { t } = useI18n();
   return (
-    <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white">
+    <section className="py-8 px-4 sm:px-6 lg:px-8 bg-transparent">
       <motion.div
         variants={containerVariants}
         initial="hidden"
@@ -157,16 +140,18 @@ export default function FeatureButtons() {
             <motion.button
               key={feature.labelKey}
               variants={itemVariants}
-              className={`group flex items-center gap-2.5 px-5 py-3 rounded-full ${feature.bgColor} transition-all duration-200 border border-transparent hover:border-[#84B179]/30`}
+              className={`group flex items-center gap-2.5 px-5 py-3 rounded-full transition-all duration-200 ${
+                feature.variant === "dashed"
+                  ? "border-2 border-dashed border-[var(--theme-border-strong)] bg-transparent hover:bg-[var(--theme-surface-muted)]"
+                  : "border border-[var(--theme-border-strong)] bg-[rgba(232,245,189,0.34)] hover:bg-[rgba(215,233,196,0.72)]"
+              }`}
               whileHover={{ scale: 1.03, y: -2 }}
               whileTap={{ scale: 0.97 }}
             >
-              <span
-                className={`${feature.color} transition-transform group-hover:scale-110`}
-              >
+              <span className="text-[var(--theme-accent-strong)] transition-transform group-hover:scale-110">
                 {feature.icon}
               </span>
-              <span className="text-sm font-medium text-zinc-700 whitespace-nowrap">
+              <span className="text-sm font-medium text-[var(--theme-text-muted)] whitespace-nowrap">
                 {t(feature.labelKey)}
               </span>
             </motion.button>
@@ -175,11 +160,11 @@ export default function FeatureButtons() {
 
         {/* Additional Info */}
         <motion.div variants={itemVariants} className="mt-10 text-center">
-          <p className="text-sm text-zinc-500">
+          <p className="text-sm text-[var(--theme-text-muted)]">
             {t("feature.orBrowse")}{" "}
             <Link
               href="/marketplace"
-              className="text-[#84B179] font-medium hover:underline"
+              className="theme-link font-medium hover:underline"
             >
               {t("feature.completeMarketplace")}
             </Link>{" "}

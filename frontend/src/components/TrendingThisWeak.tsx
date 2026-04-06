@@ -71,19 +71,19 @@ export default function TrendingThisWeek() {
   };
 
   return (
-    <section className="py-12 px-12 sm:px-8 lg:px-12 bg-white font-sans">
+    <section className="py-12 px-12 sm:px-8 lg:px-12 bg-transparent font-sans">
       <div className=" mx-auto">
         {/* Header Row */}
         <div className="flex justify-between items-center mb-10">
           <div className="flex items-center gap-3">
             <span className="text-2xl">🔥</span>
-            <h2 className="text-3xl font-bold text-zinc-900 tracking-tight">
+            <h2 className="text-3xl font-bold text-[var(--theme-text)] tracking-tight">
               Trending This Week
             </h2>
           </div>
           <button
             onClick={() => router.push("/discover-new")}
-            className="text-[11px] font-bold text-[#BC6D25] flex items-center gap-1 hover:underline tracking-tight"
+            className="text-[11px] font-bold theme-link flex items-center gap-1 hover:underline tracking-tight"
           >
             View research feed <ArrowRight className="w-3 h-3" />
           </button>
@@ -95,7 +95,7 @@ export default function TrendingThisWeek() {
             <div
               key={index}
               onClick={handleNavigation}
-              className="bg-white border border-zinc-100 rounded-[2rem] p-7 flex flex-col min-h-[320px] cursor-pointer hover:shadow-xl hover:border-zinc-200 transition-all duration-500 group relative"
+              className="theme-panel rounded-[2rem] p-7 flex flex-col min-h-[320px] cursor-pointer hover:shadow-xl hover:border-[var(--theme-border-strong)] transition-all duration-500 group relative"
             >
               {/* Badge & Lab Name */}
               <div className="flex items-center gap-3 mb-6">
@@ -105,24 +105,24 @@ export default function TrendingThisWeek() {
                   {item.badgeIcon}
                   {item.badge}
                 </div>
-                <span className="text-[10px] font-bold text-zinc-300 uppercase tracking-widest whitespace-nowrap">
+                <span className="text-[10px] font-bold text-[var(--theme-text-muted)] uppercase tracking-widest whitespace-nowrap">
                   {item.lab}
                 </span>
               </div>
 
               {/* Title */}
-              <h3 className="text-[15px] font-bold text-zinc-900 mb-4 leading-tight group-hover:text-[#BC6D25] transition-colors">
+              <h3 className="text-[15px] font-bold text-[var(--theme-text)] mb-4 leading-tight group-hover:text-[var(--theme-accent-hover)] transition-colors">
                 {item.title}
               </h3>
 
               {/* Description */}
-              <p className="text-[12px] text-zinc-400 leading-relaxed font-medium">
+              <p className="text-[12px] text-[var(--theme-text-muted)] leading-relaxed font-medium">
                 {item.desc}
               </p>
 
               {/* Subtle hover indicator */}
               <div className="mt-auto pt-6 opacity-0 group-hover:opacity-100 transition-opacity">
-                <span className="text-[10px] font-bold text-[#BC6D25] flex items-center gap-1">
+                <span className="text-[10px] font-bold text-[var(--theme-accent-hover)] flex items-center gap-1">
                   Try in Chat Hub <ArrowRight className="w-2.5 h-2.5" />
                 </span>
               </div>

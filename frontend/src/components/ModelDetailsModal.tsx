@@ -39,14 +39,14 @@ export function ModelDetailsModal({
         {/* HEADER */}
         <div className="px-8 py-6 flex items-center justify-between bg-white border-b border-zinc-100 shrink-0">
           <div className="flex items-center gap-4">
-            <div className="w-12 h-12 bg-[#FCE8F3] rounded-xl flex items-center justify-center text-2xl shrink-0">
+            <div className="w-12 h-12 bg-[var(--theme-accent-soft)] rounded-xl flex items-center justify-center text-2xl shrink-0">
               🧠
             </div>
             <div>
               <div className="flex items-center gap-3">
                 <h1 className="text-2xl font-bold text-zinc-900">{model.name}</h1>
                 {model.isNew && (
-                  <span className="bg-[#E8F8F0] text-[#2D8A5B] text-[10px] font-bold px-3 py-0.5 rounded-full border border-[#C8E6D9] uppercase tracking-wide">
+                  <span className="bg-[var(--theme-accent-soft)] text-[var(--theme-accent)] text-[10px] font-bold px-3 py-0.5 rounded-full border border-[var(--theme-border)] uppercase tracking-wide">
                     New
                   </span>
                 )}
@@ -70,7 +70,7 @@ export function ModelDetailsModal({
               onClick={() => setActiveTab(tab)}
               className={`py-4 text-sm font-medium transition-all relative whitespace-nowrap ${
                 activeTab === tab
-                  ? 'text-[#D4622A]'
+                  ? 'text-[var(--theme-accent-strong)]'
                   : 'text-zinc-400 hover:text-zinc-600'
               }`}
             >
@@ -78,7 +78,7 @@ export function ModelDetailsModal({
               {activeTab === tab && (
                 <motion.div
                   layoutId="activeTabUnderline"
-                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[#D4622A]"
+                  className="absolute bottom-0 left-0 right-0 h-[2px] bg-[var(--theme-accent-strong)]"
                 />
               )}
             </button>
@@ -86,7 +86,7 @@ export function ModelDetailsModal({
         </div>
 
         {/* SCROLLABLE CONTENT */}
-        <div className="overflow-y-auto flex-1 bg-[#F7F7F6]">
+        <div className="overflow-y-auto flex-1 ">
           <div className="p-8">
             <AnimatePresence mode="wait">
               <motion.div
@@ -158,20 +158,20 @@ function OverviewTab({ model }: { model: AiModel }) {
 
       <InfoCard title="EXAMPLE PROMPT → OUTPUT">
         <div className="space-y-4">
-          <div className="bg-[#FFF6F2] p-4 rounded-xl border border-[#FFE4D6]">
-            <p className="text-[10px] font-bold text-[#D4622A] mb-2 uppercase tracking-widest">User</p>
+          <div className="bg-[var(--theme-accent-soft)] p-4 rounded-xl border border-[var(--theme-border)]">
+            <p className="text-[10px] font-bold text-[var(--theme-accent-strong)] mb-2 uppercase tracking-widest">User</p>
             <p className="text-zinc-700 text-sm italic">
               &quot;Summarize this research paper in 3 bullet points and suggest 2 follow-up questions.&quot;
             </p>
           </div>
-          <div className="bg-[#EFF3FF] p-5 rounded-xl border border-[#DDE5FF]">
-            <p className="text-[10px] font-bold text-blue-600 mb-3 uppercase tracking-widest">{model.name}</p>
+          <div className="bg-[var(--theme-accent-soft)] p-5 rounded-xl border border-[var(--theme-border)]">
+            <p className="text-[10px] font-bold text-[var(--theme-accent-strong)] mb-3 uppercase tracking-widest">{model.name}</p>
             <ul className="text-sm text-zinc-600 space-y-1.5">
               <li>· The paper introduces a new attention mechanism reducing compute by 40%</li>
               <li>· Results on MMLU show 3.2% improvement over baseline</li>
               <li>· Authors release code and weights under MIT license</li>
             </ul>
-            <div className="mt-4 pt-4 border-t border-[#DDE5FF]">
+            <div className="mt-4 pt-4 border-t border-[var(--theme-border)]">
               <p className="text-sm font-bold text-zinc-800 mb-2">Follow-up questions:</p>
               <ol className="text-sm text-zinc-500 space-y-1">
                 <li>1. How does this scale to 100B+ parameter models?</li>
@@ -213,20 +213,20 @@ function HowToUseTab({ model }: { model: AiModel }) {
         <Step num={2} title="Choose your integration method"
           desc="Options: (a) NexusAI REST API — simple HTTP requests from any language, (b) Official SDK — Python, Node.js, Go packages available, (c) No-code — use the built-in Playground or connect via Zapier / Make."
         >
-          <div className="mt-3 bg-[#F5F6F7] border border-zinc-200 rounded-xl p-4 font-mono text-[12px] leading-relaxed">
+          <div className="mt-3 bg-[var(--theme-page-strong)] border border-zinc-200 rounded-xl p-4 font-mono text-[12px] leading-relaxed">
             <div className="flex items-center justify-between mb-3">
               <p className="text-zinc-400 text-[9px] uppercase font-bold tracking-widest">Quick Start (Python)</p>
               <button className="px-2 py-1 bg-white border border-zinc-200 rounded text-[10px] font-semibold flex items-center gap-1.5 hover:bg-zinc-50">
                 <Copy className="w-3 h-3" /> Copy
               </button>
             </div>
-            <p><span className="text-blue-600">import</span> nexusai</p>
-            <p>client = nexusai.Client(api_key=<span className="text-amber-600">&quot;YOUR_KEY&quot;</span>)</p>
+            <p><span className="text-[var(--theme-accent-strong)]">import</span> nexusai</p>
+            <p>client = nexusai.Client(api_key=<span className="text-[var(--theme-accent-strong)]">&quot;YOUR_KEY&quot;</span>)</p>
             <p>response = client.chat(</p>
-            <p className="pl-4">model=<span className="text-amber-600">&quot;{model.id ?? 'gpt-4o'}&quot;</span>,</p>
-            <p className="pl-4">messages=[&#123;<span className="text-amber-600">&quot;role&quot;</span>:<span className="text-amber-600">&quot;user&quot;</span>, <span className="text-amber-600">&quot;content&quot;</span>:<span className="text-amber-600">&quot;Hello!&quot;</span>&#125;]</p>
+            <p className="pl-4">model=<span className="text-[var(--theme-accent-strong)]">&quot;{model.id ?? 'gpt-4o'}&quot;</span>,</p>
+            <p className="pl-4">messages=[&#123;<span className="text-[var(--theme-accent-strong)]">&quot;role&quot;</span>:<span className="text-[var(--theme-accent-strong)]">&quot;user&quot;</span>, <span className="text-[var(--theme-accent-strong)]">&quot;content&quot;</span>:<span className="text-[var(--theme-accent-strong)]">&quot;Hello!&quot;</span>&#125;]</p>
             <p>)</p>
-            <p><span className="text-blue-600">print</span>(response.content)</p>
+            <p><span className="text-[var(--theme-accent-strong)]">print</span>(response.content)</p>
           </div>
         </Step>
         <Step num={3} title="Understand input and output formats"
@@ -238,15 +238,15 @@ function HowToUseTab({ model }: { model: AiModel }) {
         <Step num={5} title="Test in the Playground first"
           desc="Before writing code, iterate on your prompt in the built-in Playground. Test edge cases, adjust tone and format, then copy the final prompt into your integration."
         >
-          <button className="mt-3 px-6 py-2.5 bg-[#C06020] text-white rounded-full font-semibold text-sm hover:bg-[#A85018] transition-all flex items-center gap-2">
+          <button className="mt-3 px-6 py-2.5 bg-[var(--theme-accent-strong)] text-white rounded-full font-semibold text-sm hover:bg-[var(--theme-accent-hover)] transition-all flex items-center gap-2">
             Open Playground →
           </button>
         </Step>
       </div>
 
-      <div className="bg-[#EBF8F4] border border-[#C2E0D6] p-4 rounded-xl">
-        <p className="text-sm text-[#1E6B4A] leading-relaxed">
-          <span className="font-bold text-[#145034]">Pro tip:</span> Start with a small free-tier experiment. Build a minimal working version, measure quality and latency, then scale. Most production apps iterate through 3–5 prompt versions before going live.
+      <div className="bg-[var(--theme-accent-soft)] border border-[var(--theme-border)] p-4 rounded-xl">
+        <p className="text-sm text-[var(--theme-accent-strong)] leading-relaxed">
+          <span className="font-bold text-[var(--theme-accent-strong)]">Pro tip:</span> Start with a small free-tier experiment. Build a minimal working version, measure quality and latency, then scale. Most production apps iterate through 3–5 prompt versions before going live.
         </p>
       </div>
     </div>
@@ -304,9 +304,9 @@ function PricingTab({ model }: { model: AiModel }) {
           ]}
         />
       </div>
-      <div className="bg-[#EEF4FF] border border-[#D6E4FF] p-5 rounded-xl">
-        <p className="text-sm text-[#1E3FA0] leading-relaxed">
-          <span className="font-bold text-blue-900">Free tier available:</span> Get 100K tokens/month at no cost. Perfect for prototyping and exploration. No credit card required to get started.
+      <div className="bg-[var(--theme-accent-soft)] border border-[var(--theme-border)] p-5 rounded-xl">
+        <p className="text-sm text-[var(--theme-accent-strong)] leading-relaxed">
+          <span className="font-bold text-[var(--theme-accent-strong)]">Free tier available:</span> Get 100K tokens/month at no cost. Perfect for prototyping and exploration. No credit card required to get started.
         </p>
       </div>
     </div>
@@ -337,7 +337,7 @@ function PromptGuideTab({ model }: { model: AiModel }) {
           code={`Classify customer sentiment. Examples:\nInput: "Shipping was fast!" → Output: positive\nInput: "Product broke after a day." → Output: negative\nInput: "It's okay, nothing special." → Output: neutral\n\nNow classify: "{new_review_here}"`}
         />
       </div>
-      <div className="bg-[#FFFBEB] border border-[#FEF3C7] p-5 rounded-xl">
+      <div className="bg-[var(--theme-accent-soft)] border border-[var(--theme-border)] p-5 rounded-xl">
         <p className="text-sm text-[#92400E] leading-relaxed">
           <span className="font-bold text-amber-900">Pro tips:</span> Always specify the desired output length. Use delimiters like triple backticks to separate instructions from content. For JSON output, include a sample structure in the prompt.
         </p>
@@ -375,7 +375,7 @@ function AgentCreationTab() {
         />
       </div>
       <div className="flex gap-3 pt-2">
-        <button className="px-6 py-2.5 bg-[#C06020] text-white rounded-full font-semibold text-sm hover:bg-[#A85018] transition-all">
+        <button className="px-6 py-2.5 bg-[var(--theme-accent-strong)] text-white rounded-full font-semibold text-sm hover:bg-[var(--theme-accent-hover)] transition-all">
           Open Agent Builder →
         </button>
         <button className="px-6 py-2.5 border border-zinc-200 rounded-full font-semibold text-sm hover:bg-zinc-50 transition-all text-zinc-600">
@@ -481,8 +481,8 @@ function Step({
 }) {
   return (
     <div className="flex gap-5">
-      <div className="w-8 h-8 rounded-full bg-[#FFF3EE] border border-[#FFD9C7] flex items-center justify-center shrink-0 mt-0.5">
-        <span className="text-[#C06020] font-bold text-sm">{num}</span>
+      <div className="w-8 h-8 rounded-full bg-[var(--theme-accent-soft)] border border-[var(--theme-border)] flex items-center justify-center shrink-0 mt-0.5">
+        <span className="text-[var(--theme-accent-strong)] font-bold text-sm">{num}</span>
       </div>
       <div>
         <h4 className="text-base font-bold text-zinc-900 mb-1">{title}</h4>
@@ -499,9 +499,9 @@ function PriceCard({
   type: string; price: string; unit: string; features: string[]; popular?: boolean;
 }) {
   return (
-    <div className={`p-6 rounded-2xl border-2 bg-white flex flex-col relative ${popular ? 'border-[#C06020] shadow-lg scale-[1.03] z-10' : 'border-zinc-200 shadow-sm'}`}>
+    <div className={`p-6 rounded-2xl border-2 bg-white flex flex-col relative ${popular ? 'border-[var(--theme-accent-strong)] shadow-lg scale-[1.03] z-10' : 'border-zinc-200 shadow-sm'}`}>
       {popular && (
-        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[#C06020] text-white text-[10px] font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow whitespace-nowrap">
+        <div className="absolute -top-3.5 left-1/2 -translate-x-1/2 bg-[var(--theme-accent-strong)] text-white text-[10px] font-bold px-4 py-1 rounded-full uppercase tracking-wider shadow whitespace-nowrap">
           Most Popular
         </div>
       )}
@@ -511,7 +511,7 @@ function PriceCard({
       <div className="space-y-3 flex-1">
         {features.map((f) => (
           <div key={f} className="flex items-center gap-2.5 text-zinc-500 text-xs">
-            <CheckCircle2 className="w-3.5 h-3.5 text-[#2D8A5B] shrink-0" />
+            <CheckCircle2 className="w-3.5 h-3.5 text-[var(--theme-accent-strong)] shrink-0" />
             {f}
           </div>
         ))}
@@ -531,7 +531,7 @@ function PromptPrinciple({ num, title, code }: { num: number; title: string; cod
           <Copy className="w-3.5 h-3.5" />
         </button>
       </div>
-      <div className="bg-[#EFF3FF] border border-[#DDE5FF] rounded-lg p-4 font-mono text-xs text-blue-800 leading-relaxed whitespace-pre-wrap">
+      <div className="bg-[var(--theme-accent-soft)] border border-[var(--theme-border)] rounded-lg p-4 font-mono text-xs text-[var(--theme-accent-strong)] leading-relaxed whitespace-pre-wrap">
         {code}
       </div>
     </div>

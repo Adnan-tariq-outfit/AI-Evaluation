@@ -42,21 +42,21 @@ export default function ProfilePage() {
   }, [isAuthenticated, isLoading, router]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col theme-page">
       <Header />
       <main className="flex-1 pt-20 md:pt-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-3xl mx-auto py-10">
           <div className="flex items-start justify-between gap-4 mb-8">
             <div>
-              <h1 className="text-3xl font-bold text-zinc-900">Your Profile</h1>
-              <p className="text-zinc-600 mt-1">
+              <h1 className="text-3xl font-bold text-[var(--theme-text)]">Your Profile</h1>
+              <p className="text-[var(--theme-text-muted)] mt-1">
                 Account details and session information.
               </p>
             </div>
             <div className="flex items-center gap-2">
               <Link
                 href="/"
-                className="px-4 py-2 text-sm font-medium text-zinc-700 rounded-lg hover:bg-zinc-50 transition-colors"
+                className="theme-button-secondary px-4 py-2 text-sm font-medium rounded-lg transition-colors"
               >
                 Home
               </Link>
@@ -65,7 +65,7 @@ export default function ProfilePage() {
                   await logout();
                   router.push('/login');
                 }}
-                className="px-4 py-2 text-sm font-semibold text-white bg-[#84B179] rounded-lg hover:bg-[#A2CB8B] transition-colors"
+                className="theme-button-primary px-4 py-2 text-sm font-semibold rounded-lg transition-colors"
               >
                 {t("common.logOut")}
               </button>
@@ -73,42 +73,42 @@ export default function ProfilePage() {
           </div>
 
           {(isLoading || serverLoading) && (
-            <div className="rounded-2xl border border-zinc-100 bg-zinc-50 p-6">
+            <div className="theme-panel-muted rounded-2xl p-6">
               <p className="text-sm text-zinc-600">Loading profile…</p>
             </div>
           )}
 
           {!isLoading && !serverLoading && effectiveUser && (
-            <div className="rounded-2xl border border-zinc-100 bg-white shadow-sm overflow-hidden">
-              <div className="p-6 sm:p-8 flex items-center gap-4 border-b border-zinc-100">
-                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[#84B179] to-[#A2CB8B] flex items-center justify-center text-white font-bold text-lg">
+            <div className="theme-panel rounded-2xl overflow-hidden">
+              <div className="p-6 sm:p-8 flex items-center gap-4 border-b border-[var(--theme-border)]">
+                <div className="w-14 h-14 rounded-full bg-gradient-to-br from-[var(--theme-accent)] to-[var(--theme-accent-strong)] flex items-center justify-center text-white font-bold text-lg">
                   {effectiveUser.firstName?.[0]}
                   {effectiveUser.lastName?.[0]}
                 </div>
                 <div className="min-w-0">
-                  <p className="text-lg font-semibold text-zinc-900 truncate">
+                  <p className="text-lg font-semibold text-[var(--theme-text)] truncate">
                     {effectiveUser.fullName}
                   </p>
-                  <p className="text-sm text-zinc-600 truncate">{effectiveUser.email}</p>
+                  <p className="text-sm text-[var(--theme-text-muted)] truncate">{effectiveUser.email}</p>
                 </div>
               </div>
 
               <div className="p-6 sm:p-8 grid grid-cols-1 sm:grid-cols-2 gap-6">
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-zinc-500">Role</p>
-                  <p className="text-sm font-semibold text-zinc-900 uppercase tracking-wide">
+                  <p className="text-xs font-medium text-[var(--theme-text-muted)]">Role</p>
+                  <p className="text-sm font-semibold text-[var(--theme-text)] uppercase tracking-wide">
                     {effectiveUser.role}
                   </p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-zinc-500">User ID</p>
-                  <p className="text-sm font-mono text-zinc-800 break-all">{effectiveUser.id}</p>
+                  <p className="text-xs font-medium text-[var(--theme-text-muted)]">User ID</p>
+                  <p className="text-sm font-mono text-[var(--theme-text)] break-all">{effectiveUser.id}</p>
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-zinc-500">Created</p>
-                  <p className="text-sm text-zinc-900">
+                  <p className="text-xs font-medium text-[var(--theme-text-muted)]">Created</p>
+                  <p className="text-sm text-[var(--theme-text)]">
                     {effectiveUser.createdAt
                       ? new Date(effectiveUser.createdAt).toLocaleString()
                       : '—'}
@@ -116,8 +116,8 @@ export default function ProfilePage() {
                 </div>
 
                 <div className="space-y-1">
-                  <p className="text-xs font-medium text-zinc-500">Last login</p>
-                  <p className="text-sm text-zinc-900">
+                  <p className="text-xs font-medium text-[var(--theme-text-muted)]">Last login</p>
+                  <p className="text-sm text-[var(--theme-text)]">
                     {effectiveUser.lastLoginAt
                       ? new Date(effectiveUser.lastLoginAt).toLocaleString()
                       : '—'}
@@ -128,15 +128,15 @@ export default function ProfilePage() {
           )}
 
           {!isLoading && !serverLoading && !effectiveUser && (
-            <div className="rounded-2xl border border-amber-200 bg-amber-50 p-6">
-              <p className="text-sm text-amber-900">
+            <div className="rounded-2xl border border-[var(--theme-border-strong)] bg-[rgba(232,245,189,0.4)] p-6">
+              <p className="text-sm text-[var(--theme-text)]">
                 We couldn’t load your profile. Please{' '}
                 <button
                   onClick={async () => {
                     await logout();
                     router.push('/login');
                   }}
-                  className="underline font-medium"
+                  className="theme-link underline font-medium"
                 >
                   log out
                 </button>{' '}
@@ -150,4 +150,3 @@ export default function ProfilePage() {
     </div>
   );
 }
-

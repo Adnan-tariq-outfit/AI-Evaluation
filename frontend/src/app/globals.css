@@ -1,8 +1,25 @@
 @import "tailwindcss";
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f5f3ea;
+  --foreground: #182116;
+  --theme-page: #f5f3ea;
+  --theme-page-strong: #efecdf;
+  --theme-surface: #fffdf7;
+  --theme-surface-elevated: #ffffff;
+  --theme-surface-muted: #f1eee2;
+  --theme-surface-soft: #eef4df;
+  --theme-border: #d8decc;
+  --theme-border-strong: #bcc8aa;
+  --theme-text: #182116;
+  --theme-text-muted: #5d6857;
+  --theme-accent: #84b179;
+  --theme-accent-strong: #587248;
+  --theme-accent-hover: #49603c;
+  --theme-accent-soft: #e8f5bd;
+  --theme-accent-soft-strong: #d7e9c4;
+  --theme-focus: #6b8b5a;
+  --theme-danger: #b94b49;
 }
 
 @theme inline {
@@ -12,16 +29,19 @@
   --font-mono: var(--font-geist-mono);
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #09090b;
-    --foreground: #fafafa;
-  }
+*,
+*::before,
+*::after {
+  border-color: var(--theme-border);
 }
 
 body {
   background: var(--background);
   color: var(--foreground);
+  min-height: 100vh;
+  background-image:
+    radial-gradient(circle at top, rgba(232, 245, 189, 0.55), transparent 28%),
+    linear-gradient(180deg, #fcfbf5 0%, var(--theme-page) 42%, var(--theme-page-strong) 100%);
 }
 
 /* Smooth scrolling */
@@ -31,7 +51,7 @@ html {
 
 /* Focus visible styles */
 :focus-visible {
-  outline: 2px solid #6366f1;
+  outline: 2px solid var(--theme-focus);
   outline-offset: 2px;
 }
 
@@ -54,20 +74,123 @@ html {
 }
 
 ::-webkit-scrollbar-track {
-  background: transparent;
+  background: rgba(255, 255, 255, 0.45);
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #a1a1aa;
+  background: var(--theme-border-strong);
   border-radius: 4px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #71717a;
+  background: var(--theme-accent);
 }
 
 /* Selection color */
 ::selection {
-  background: #6366f1;
+  background: var(--theme-accent-strong);
   color: white;
+}
+
+.theme-page {
+  background: var(--theme-page);
+  color: var(--theme-text);
+}
+
+.theme-panel {
+  background: rgba(255, 253, 247, 0.94);
+  border: 1px solid var(--theme-border);
+  box-shadow: 0 14px 36px rgba(88, 114, 72, 0.08);
+}
+
+.theme-panel-muted {
+  background: var(--theme-surface-muted);
+  border: 1px solid var(--theme-border);
+}
+
+.theme-card {
+  background: rgba(255, 255, 255, 0.94);
+  border: 1px solid var(--theme-border);
+}
+
+.theme-card-soft {
+  background: rgba(238, 244, 223, 0.78);
+  border: 1px solid var(--theme-border-strong);
+}
+
+.theme-input {
+  background: rgba(255, 255, 255, 0.92);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text);
+}
+
+.theme-input::placeholder {
+  color: var(--theme-text-muted);
+}
+
+.theme-input:focus {
+  outline: none;
+  border-color: var(--theme-accent);
+  box-shadow: 0 0 0 4px rgba(132, 177, 121, 0.18);
+}
+
+.theme-button-primary {
+  background: var(--theme-accent-strong);
+  border: 1px solid transparent;
+  color: white;
+  transition:
+    background-color 180ms ease,
+    transform 180ms ease,
+    box-shadow 180ms ease;
+}
+
+.theme-button-primary:hover {
+  background: var(--theme-accent-hover);
+}
+
+.theme-button-secondary {
+  background: rgba(255, 255, 255, 0.88);
+  border: 1px solid var(--theme-border);
+  color: var(--theme-text);
+  transition:
+    background-color 180ms ease,
+    border-color 180ms ease,
+    color 180ms ease;
+}
+
+.theme-button-secondary:hover {
+  background: var(--theme-surface-muted);
+  border-color: var(--theme-border-strong);
+}
+
+.theme-chip {
+  background: rgba(232, 245, 189, 0.32);
+  border: 1px solid var(--theme-border-strong);
+  color: var(--theme-accent-hover);
+}
+
+.theme-chip-active {
+  background: var(--theme-accent-strong);
+  border-color: var(--theme-accent-strong);
+  color: white;
+}
+
+.theme-badge {
+  background: rgba(232, 245, 189, 0.34);
+  border: 1px solid var(--theme-border-strong);
+  color: var(--theme-accent-hover);
+}
+
+.theme-link {
+  color: var(--theme-accent-hover);
+}
+
+.theme-link:hover {
+  color: var(--theme-accent-strong);
+}
+
+.theme-icon-surface {
+  background: rgba(232, 245, 189, 0.48);
+  border: 1px solid rgba(132, 177, 121, 0.3);
+  color: var(--theme-accent-hover);
 }

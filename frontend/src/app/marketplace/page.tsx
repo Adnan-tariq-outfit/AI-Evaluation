@@ -127,28 +127,28 @@ export default function MarketplacePage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-[#f7f6f2]">
+    <div className="min-h-screen flex flex-col theme-page">
       <Header />
       <main className="flex-1 pt-24 px-3 sm:px-4 lg:px-6 pb-8">
         <div className="w-full max-w-[1600px] mx-auto">
-          <section className="rounded-2xl border border-[#e9e3d9] bg-white shadow-sm px-4 sm:px-6 py-5 mb-4">
+          <section className="theme-panel rounded-2xl px-4 sm:px-6 py-5 mb-4">
             <div className="flex flex-col gap-4 lg:flex-row lg:items-center lg:justify-between">
               <div>
-                <h1 className="text-2xl md:text-3xl font-semibold text-zinc-900">
+                <h1 className="text-2xl md:text-3xl font-semibold text-[var(--theme-text)]">
                   Model Marketplace
                 </h1>
-                <p className="text-sm text-zinc-500 mt-1">
+                <p className="text-sm text-[var(--theme-text-muted)] mt-1">
                   Discover and compare AI models by provider, capability,
                   rating, and cost.
                 </p>
               </div>
               <div className="flex items-center gap-2">
-                <span className="text-xs sm:text-sm text-zinc-600 bg-[#f6f2eb] border border-[#eadfce] px-3 py-1.5 rounded-full">
+                <span className="text-xs sm:text-sm text-[var(--theme-text-muted)] bg-[var(--theme-surface-muted)] border border-[var(--theme-border)] px-3 py-1.5 rounded-full">
                   {countLabel}
                 </span>
                 <button
                   onClick={() => setShowMobileFilters((prev) => !prev)}
-                  className="lg:hidden px-3 py-1.5 text-sm rounded-full border border-[#d8cfbf] bg-white text-zinc-800 hover:bg-[#faf8f4]"
+                  className="theme-button-secondary lg:hidden px-3 py-1.5 text-sm rounded-full"
                 >
                   {showMobileFilters ? "Hide Filters" : "Show Filters"}
                   {activeFilterCount > 0 ? ` (${activeFilterCount})` : ""}
@@ -157,13 +157,13 @@ export default function MarketplacePage() {
             </div>
           </section>
 
-          <section className="mb-4 flex flex-col gap-3 rounded-2xl border border-[#e9e3d9] bg-white px-4 sm:px-6 py-4 shadow-sm">
+          <section className="theme-panel mb-4 flex flex-col gap-3 rounded-2xl px-4 sm:px-6 py-4">
             <div className="flex flex-col md:flex-row gap-3">
               <input
                 value={search}
                 onChange={(e) => setSearch(e.target.value)}
                 placeholder={t("common.searchModels", { count: models.length })}
-                className="w-full md:flex-1 px-4 py-2.5 border border-[#d8cfbf] rounded-full bg-[#fdfcf9] text-sm text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179]"
+                className="theme-input w-full md:flex-1 px-4 py-2.5 rounded-full text-sm"
               />
               <div className="flex gap-2">
                 <select
@@ -177,7 +177,7 @@ export default function MarketplacePage() {
                         | "price-high",
                     )
                   }
-                  className="px-3 py-2.5 border border-[#d8cfbf] rounded-full bg-white text-sm text-zinc-800 focus:outline-none focus:ring-2 focus:ring-[#84B179]"
+                  className="theme-input px-3 py-2.5 rounded-full text-sm"
                 >
                   <option value="featured">Sort: Featured</option>
                   <option value="rating">Sort: Rating (High to Low)</option>
@@ -186,7 +186,7 @@ export default function MarketplacePage() {
                 </select>
                 <button
                   onClick={clearAllFilters}
-                  className="px-3 py-2.5 text-sm text-zinc-900 rounded-full border border-[#d8cfbf] bg-white hover:bg-[#faf8f4]"
+                  className="theme-button-secondary px-3 py-2.5 text-sm rounded-full"
                 >
                   Reset
                 </button>
@@ -198,7 +198,7 @@ export default function MarketplacePage() {
                 {provider && (
                   <button
                     onClick={() => setProvider("")}
-                    className="px-3 py-1 rounded-full bg-[#f6eadf] border border-[#e6c8ad] text-[#8d5b30]"
+                    className="theme-badge px-3 py-1 rounded-full"
                   >
                     Provider: {provider} ×
                   </button>
@@ -206,7 +206,7 @@ export default function MarketplacePage() {
                 {capability && (
                   <button
                     onClick={() => setCapability("")}
-                    className="px-3 py-1 rounded-full bg-[#f6eadf] border border-[#e6c8ad] text-[#8d5b30]"
+                    className="theme-badge px-3 py-1 rounded-full"
                   >
                     Capability: {capability} ×
                   </button>
@@ -214,7 +214,7 @@ export default function MarketplacePage() {
                 {minRating && (
                   <button
                     onClick={() => setMinRating("")}
-                    className="px-3 py-1 rounded-full bg-[#f6eadf] border border-[#e6c8ad] text-[#8d5b30]"
+                    className="theme-badge px-3 py-1 rounded-full"
                   >
                     Min Rating: {minRating}+ ×
                   </button>
@@ -222,7 +222,7 @@ export default function MarketplacePage() {
                 {maxPrice && (
                   <button
                     onClick={() => setMaxPrice("")}
-                    className="px-3 py-1 rounded-full bg-[#f6eadf] border border-[#e6c8ad] text-[#8d5b30]"
+                    className="theme-badge px-3 py-1 rounded-full"
                   >
                     Max Price: ${maxPrice} ×
                   </button>
@@ -235,23 +235,23 @@ export default function MarketplacePage() {
             <aside
               className={`${
                 showMobileFilters ? "block" : "hidden"
-              } lg:block h-fit lg:sticky lg:top-28 rounded-2xl border border-[#e9e3d9] bg-white p-4 shadow-sm`}
+              } lg:block h-fit lg:sticky lg:top-28 theme-panel rounded-2xl p-4`}
             >
               <div className="flex items-center justify-between mb-3">
-                <p className="text-xs font-semibold tracking-wide text-zinc-500">
+                <p className="text-xs font-semibold tracking-wide text-[var(--theme-text-muted)]">
                   FILTERS
                 </p>
                 {activeFilterCount > 0 && (
                   <button
                     onClick={clearAllFilters}
-                    className="text-xs text-[#D4622A] font-medium hover:underline"
+                    className="text-xs theme-link font-medium hover:underline"
                   >
                     Clear all
                   </button>
                 )}
               </div>
 
-              <p className="text-xs font-semibold text-zinc-500 mb-2">
+              <p className="text-xs font-semibold text-[var(--theme-text-muted)] mb-2">
                 PROVIDER
               </p>
               <div className="space-y-1.5 mb-4 max-h-52 overflow-y-auto pr-1">
@@ -259,8 +259,8 @@ export default function MarketplacePage() {
                   onClick={() => setProvider("")}
                   className={`w-full text-left px-2.5 py-2 text-sm rounded-lg border ${
                     provider === ""
-                      ? "bg-[#f6eadf] border-[#e6c8ad] text-[#8d5b30]"
-                      : "border-transparent hover:bg-zinc-50 text-zinc-700"
+                      ? "bg-[rgba(232,245,189,0.36)] border-[var(--theme-border-strong)] text-[var(--theme-accent-hover)]"
+                      : "border-transparent hover:bg-[var(--theme-surface-muted)] text-[var(--theme-text-muted)]"
                   }`}
                 >
                   All providers
@@ -271,8 +271,8 @@ export default function MarketplacePage() {
                     onClick={() => setProvider(provider === p ? "" : p)}
                     className={`w-full text-left px-2.5 py-2 text-sm rounded-lg border ${
                       provider === p
-                        ? "bg-[#f6eadf] border-[#e6c8ad] text-[#8d5b30]"
-                        : "border-transparent hover:bg-zinc-50 text-zinc-700"
+                        ? "bg-[rgba(232,245,189,0.36)] border-[var(--theme-border-strong)] text-[var(--theme-accent-hover)]"
+                        : "border-transparent hover:bg-[var(--theme-surface-muted)] text-[var(--theme-text-muted)]"
                     }`}
                   >
                     {p}{" "}
@@ -283,13 +283,13 @@ export default function MarketplacePage() {
                 ))}
               </div>
 
-              <p className="text-xs font-semibold text-zinc-500 mb-2">
+              <p className="text-xs font-semibold text-[var(--theme-text-muted)] mb-2">
                 CAPABILITY
               </p>
               <select
                 value={capability}
                 onChange={(e) => setCapability(e.target.value)}
-                className="w-full px-2.5 py-2 text-sm border border-[#d8cfbf] rounded-lg mb-3 bg-[#fdfcf9] text-zinc-900"
+                className="theme-input w-full px-2.5 py-2 text-sm rounded-lg mb-3"
               >
                 <option value="">All capabilities</option>
                 {capabilities.map((c) => (
@@ -299,24 +299,24 @@ export default function MarketplacePage() {
                 ))}
               </select>
 
-              <p className="text-xs font-semibold text-zinc-500 mb-2">
+              <p className="text-xs font-semibold text-[var(--theme-text-muted)] mb-2">
                 MAX PRICE /1K TOKENS
               </p>
               <input
                 value={maxPrice}
                 onChange={(e) => setMaxPrice(e.target.value)}
                 placeholder="e.g. 30"
-                className="w-full px-2.5 py-2 text-sm border border-[#d8cfbf] rounded-lg mb-3 text-zinc-900 placeholder:text-zinc-400 bg-[#fdfcf9]"
+                className="theme-input w-full px-2.5 py-2 text-sm rounded-lg mb-3"
               />
 
-              <p className="text-xs font-semibold text-zinc-500 mb-2">
+              <p className="text-xs font-semibold text-[var(--theme-text-muted)] mb-2">
                 MIN RATING
               </p>
               <input
                 value={minRating}
                 onChange={(e) => setMinRating(e.target.value)}
                 placeholder="e.g. 4.5"
-                className="w-full px-2.5 py-2 text-sm border border-[#d8cfbf] rounded-lg text-zinc-900 placeholder:text-zinc-400 bg-[#fdfcf9]"
+                className="theme-input w-full px-2.5 py-2 text-sm rounded-lg"
               />
             </aside>
 
@@ -327,7 +327,7 @@ export default function MarketplacePage() {
                     {Array.from({ length: 12 }).map((_, idx) => (
                       <div
                         key={idx}
-                        className="rounded-2xl border border-[#e9e3d9] bg-white p-4 shadow-sm"
+                        className="theme-panel rounded-2xl p-4"
                       >
                         <div className="animate-pulse space-y-3">
                           <div className="flex items-center justify-between">
@@ -357,17 +357,17 @@ export default function MarketplacePage() {
                   </div>
                 </div>
               ) : filteredAndSortedModels.length === 0 ? (
-                <div className="rounded-2xl border border-[#e9e3d9] bg-white p-8 text-center">
-                  <h3 className="text-lg font-semibold text-zinc-900 mb-2">
+                <div className="theme-panel rounded-2xl p-8 text-center">
+                  <h3 className="text-lg font-semibold text-[var(--theme-text)] mb-2">
                     No models found
                   </h3>
-                  <p className="text-sm text-zinc-500 mb-4">
+                  <p className="text-sm text-[var(--theme-text-muted)] mb-4">
                     Try adjusting your search keywords or clearing one or more
                     filters.
                   </p>
                   <button
                     onClick={clearAllFilters}
-                    className="px-4 py-2 text-sm rounded-full bg-[#D4622A] text-white hover:bg-[#bd5525]"
+                    className="theme-button-primary px-4 py-2 text-sm rounded-full"
                   >
                     Clear Filters
                   </button>
@@ -381,37 +381,37 @@ export default function MarketplacePage() {
                         setTab("Overview");
                         setSelectedModel(m);
                       }}
-                      className="text-left rounded-2xl border border-[#e9e3d9] p-4 bg-white shadow-sm hover:shadow-md transition-shadow flex flex-col gap-3"
+                      className="theme-panel text-left rounded-2xl p-4 hover:shadow-md transition-shadow flex flex-col gap-3"
                     >
                       <div className="flex items-start justify-between gap-2">
                         <div className="flex items-center gap-3">
-                          <div className="w-10 h-10 rounded-xl bg-pink-100 flex items-center justify-center shrink-0 text-xl">
+                          <div className="w-10 h-10 rounded-xl bg-[rgba(232,245,189,0.4)] border border-[var(--theme-border-strong)] flex items-center justify-center shrink-0 text-xl">
                             🧠
                           </div>
                           <div>
-                            <h3 className="font-semibold text-zinc-900 text-sm leading-tight">
+                            <h3 className="font-semibold text-[var(--theme-text)] text-sm leading-tight">
                               {m.name}
                             </h3>
-                            <span className="text-xs text-zinc-500">
+                            <span className="text-xs text-[var(--theme-text-muted)]">
                               {m.provider}
                             </span>
                           </div>
                         </div>
                         <div className="flex gap-1 shrink-0">
                           {m.isHot && (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-orange-50 text-orange-500 border border-orange-200 font-medium">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(232,245,189,0.4)] text-[var(--theme-accent-hover)] border border-[var(--theme-border-strong)] font-medium">
                               Hot
                             </span>
                           )}
                           {m.isNew && (
-                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-600 border border-emerald-200 font-medium">
+                            <span className="text-[10px] px-2 py-0.5 rounded-full bg-[rgba(215,233,196,0.52)] text-[var(--theme-accent-strong)] border border-[var(--theme-border-strong)] font-medium">
                               New
                             </span>
                           )}
                         </div>
                       </div>
 
-                      <p className="text-xs text-zinc-600 leading-relaxed line-clamp-2">
+                      <p className="text-xs text-[var(--theme-text-muted)] leading-relaxed line-clamp-2">
                         {`${m.provider} flagship. Native computer-use agents, advanced reasoning, ${(m.contextWindow / 1_000_000).toFixed(0)}M context.`}
                       </p>
 
@@ -419,7 +419,7 @@ export default function MarketplacePage() {
                         {m.capabilities.slice(0, 4).map((cap) => (
                           <span
                             key={cap}
-                            className="text-[11px] px-3 py-0.5 rounded-full bg-zinc-100 text-zinc-600 font-medium"
+                            className="text-[11px] px-3 py-0.5 rounded-full bg-[var(--theme-surface-muted)] text-[var(--theme-text-muted)] font-medium"
                           >
                             {cap}
                           </span>
@@ -439,10 +439,10 @@ export default function MarketplacePage() {
                             </svg>
                           ))}
                         </div>
-                        <span className="text-xs text-zinc-600 font-medium">
+                        <span className="text-xs text-[var(--theme-text-muted)] font-medium">
                           {m.rating.toFixed(1)} ({Math.floor(m.rating * 1000)})
                         </span>
-                        <span className="text-xs font-semibold text-zinc-800">
+                        <span className="text-xs font-semibold text-[var(--theme-text)]">
                           ${m.pricePer1k}/1M tk
                         </span>
                         <button
@@ -451,7 +451,7 @@ export default function MarketplacePage() {
                             setSelectedModel(m);
                             setTab("How to Use");
                           }}
-                          className="text-xs text-[#D4622A] font-semibold hover:underline ml-auto whitespace-nowrap"
+                          className="text-xs theme-link font-semibold hover:underline ml-auto whitespace-nowrap"
                         >
                           How to Use →
                         </button>

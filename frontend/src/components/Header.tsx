@@ -90,8 +90,8 @@ export default function Header() {
       transition={{ duration: 0.5, ease: "easeOut" }}
       className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${
         isScrolled
-          ? "bg-white/95 backdrop-blur-md shadow-sm border-b border-zinc-100"
-          : "bg-white/80 backdrop-blur-sm"
+          ? "bg-[rgba(255,253,247,0.94)] backdrop-blur-md shadow-sm border-b border-[var(--theme-border)]"
+          : "bg-[rgba(252,251,245,0.82)] backdrop-blur-sm border-b border-transparent"
       }`}
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -99,10 +99,10 @@ export default function Header() {
           {/* Logo */}
           <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }}>
             <Link href="/" className="flex items-center gap-2">
-              <div className="w-10 h-10  flex items-center justify-center">
-                <Sparkles className="w-7 h-7 text-[#84B179]" />
+              <div className="w-10 h-10 flex items-center justify-center rounded-2xl theme-icon-surface">
+                <Sparkles className="w-6 h-6 text-[var(--theme-accent-strong)]" />
               </div>
-              <span className="text-xl font-bold text-zinc-900">NexusAI</span>
+              <span className="text-xl font-bold text-[var(--theme-text)]">NexusAI</span>
             </Link>
           </motion.div>
 
@@ -116,7 +116,7 @@ export default function Header() {
               >
                 <Link
                   href={link.href}
-                  className="px-4 py-2 text-sm font-medium text-zinc-600 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors inline-block"
+                  className="px-4 py-2 text-sm font-medium text-[var(--theme-text-muted)] rounded-lg hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-muted)] transition-colors inline-block"
                 >
                   {t(link.key)}
                 </Link>
@@ -130,7 +130,7 @@ export default function Header() {
             <div className="relative">
               <motion.button
                 onClick={() => setIsLanguageOpen(!isLanguageOpen)}
-                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-zinc-600 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
+                className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[var(--theme-text-muted)] rounded-lg hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-muted)] transition-colors"
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
                 aria-expanded={isLanguageOpen}
@@ -152,17 +152,17 @@ export default function Header() {
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: 8 }}
                     transition={{ duration: 0.15 }}
-                    className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-zinc-100 overflow-hidden z-50"
+                    className="absolute right-0 mt-2 w-40 rounded-xl shadow-lg border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] overflow-hidden z-50"
                     role="listbox"
                   >
                     {languageList.map((item) => (
                       <button
                         key={item.code}
                         onClick={() => handleLanguageSelect(item.code)}
-                        className={`w-full px-4 py-2.5 text-sm text-left hover:bg-zinc-50 transition-colors ${
+                        className={`w-full px-4 py-2.5 text-sm text-left hover:bg-[var(--theme-surface-muted)] transition-colors ${
                           language === item.code
-                            ? "text-[#84B179] font-medium"
-                            : "text-zinc-700"
+                            ? "text-[var(--theme-accent-strong)] font-medium"
+                            : "text-[var(--theme-text-muted)]"
                         }`}
                         role="option"
                         aria-selected={language === item.code}
@@ -184,11 +184,11 @@ export default function Header() {
               <div className="relative" ref={userMenuRef}>
                 <motion.button
                   onClick={() => setIsUserMenuOpen(!isUserMenuOpen)}
-                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-zinc-700 rounded-lg hover:bg-zinc-50 transition-colors"
+                  className="flex items-center gap-2 px-3 py-2 text-sm font-medium text-[var(--theme-text)] rounded-lg hover:bg-[var(--theme-surface-muted)] transition-colors"
                   whileHover={{ scale: 1.02 }}
                   whileTap={{ scale: 0.98 }}
                 >
-                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[#84B179] to-[#A2CB8B] flex items-center justify-center text-white font-semibold text-sm">
+                  <div className="w-8 h-8 rounded-full bg-gradient-to-br from-[var(--theme-accent)] to-[var(--theme-accent-strong)] flex items-center justify-center text-white font-semibold text-sm">
                     {getUserInitials()}
                   </div>
                   <span className="hidden lg:block">{user?.firstName}</span>
@@ -206,20 +206,20 @@ export default function Header() {
                       animate={{ opacity: 1, y: 0 }}
                       exit={{ opacity: 0, y: 8 }}
                       transition={{ duration: 0.15 }}
-                      className="absolute right-0 mt-2 w-56 bg-white rounded-xl shadow-lg border border-zinc-100 overflow-hidden z-50"
+                      className="absolute right-0 mt-2 w-56 rounded-xl shadow-lg border border-[var(--theme-border)] bg-[var(--theme-surface-elevated)] overflow-hidden z-50"
                     >
-                      <div className="px-4 py-3 border-b border-zinc-100">
-                        <p className="text-sm font-medium text-zinc-900">
+                      <div className="px-4 py-3 border-b border-[var(--theme-border)]">
+                        <p className="text-sm font-medium text-[var(--theme-text)]">
                           {user?.firstName} {user?.lastName}
                         </p>
-                        <p className="text-xs text-zinc-500 truncate">
+                        <p className="text-xs text-[var(--theme-text-muted)] truncate">
                           {user?.email}
                         </p>
                       </div>
                       <div className="py-1">
                         <Link
                           href="/profile"
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-zinc-700 hover:bg-zinc-50 transition-colors"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--theme-text)] hover:bg-[var(--theme-surface-muted)] transition-colors"
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           <User className="w-4 h-4" />
@@ -229,7 +229,7 @@ export default function Header() {
                         <button
                           onClick={handleLogout}
                           disabled={isLoggingOut}
-                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-red-600 hover:bg-red-50 transition-colors w-full disabled:opacity-50"
+                          className="flex items-center gap-3 px-4 py-2.5 text-sm text-[var(--theme-danger)] hover:bg-[rgba(185,75,73,0.08)] transition-colors w-full disabled:opacity-50"
                         >
                           {isLoggingOut ? (
                             <Loader2 className="w-4 h-4 animate-spin" />
@@ -249,7 +249,7 @@ export default function Header() {
               <>
                 <Link href="/login">
                   <motion.button
-                    className="px-4 py-2 text-sm font-medium text-zinc-700 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
+                    className="px-4 py-2 text-sm font-medium text-[var(--theme-text)] rounded-lg hover:bg-[var(--theme-surface-muted)] transition-colors"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -258,7 +258,7 @@ export default function Header() {
                 </Link>
                 <Link href="/login">
                   <motion.button
-                    className="px-5 py-2.5 text-sm font-semibold text-white bg-[#84B179] rounded-lg hover:bg-[#A2CB8B] transition-colors shadow-sm hover:shadow-md"
+                    className="theme-button-primary px-5 py-2.5 text-sm font-semibold rounded-lg shadow-sm hover:shadow-md"
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
@@ -272,7 +272,7 @@ export default function Header() {
           {/* Mobile Menu Button */}
           <motion.button
             onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
-            className="md:hidden p-2 text-zinc-600 rounded-lg hover:bg-zinc-50 transition-colors"
+            className="md:hidden p-2 text-[var(--theme-text-muted)] rounded-lg hover:bg-[var(--theme-surface-muted)] transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
             aria-label={t("common.toggleMenu")}
@@ -294,14 +294,14 @@ export default function Header() {
             animate={{ opacity: 1, height: "auto" }}
             exit={{ opacity: 0, height: 0 }}
             transition={{ duration: 0.25 }}
-            className="md:hidden bg-white border-t border-zinc-100"
+            className="md:hidden bg-[var(--theme-surface-elevated)] border-t border-[var(--theme-border)]"
           >
             <div className="px-4 py-4 space-y-2">
               {navLinks.map((link) => (
                 <Link
                   key={link.key}
                   href={link.href}
-                  className="block px-4 py-3 text-base font-medium text-zinc-600 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
+                  className="block px-4 py-3 text-base font-medium text-[var(--theme-text-muted)] rounded-lg hover:text-[var(--theme-text)] hover:bg-[var(--theme-surface-muted)] transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
                   {t(link.key)}
@@ -309,7 +309,7 @@ export default function Header() {
               ))}
 
               {/* Mobile Auth Section */}
-              <div className="pt-4 border-t border-zinc-100 space-y-2">
+              <div className="pt-4 border-t border-[var(--theme-border)] space-y-2">
                 {isLoading ? (
                   <div className="flex items-center justify-center py-3">
                     <Loader2 className="w-5 h-5 text-zinc-400 animate-spin" />
@@ -317,19 +317,19 @@ export default function Header() {
                 ) : isAuthenticated ? (
                   <>
                     <div className="flex items-center gap-3 px-4 py-3">
-                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[#84B179] to-[#A2CB8B] flex items-center justify-center text-white font-semibold">
+                      <div className="w-10 h-10 rounded-full bg-gradient-to-br from-[var(--theme-accent)] to-[var(--theme-accent-strong)] flex items-center justify-center text-white font-semibold">
                         {getUserInitials()}
                       </div>
                       <div>
-                        <p className="font-medium text-zinc-900">
+                        <p className="font-medium text-[var(--theme-text)]">
                           {user?.firstName} {user?.lastName}
                         </p>
-                        <p className="text-sm text-zinc-500">{user?.email}</p>
+                        <p className="text-sm text-[var(--theme-text-muted)]">{user?.email}</p>
                       </div>
                     </div>
                     <Link
                       href="/profile"
-                      className="block px-4 py-3 text-base font-medium text-zinc-700 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
+                      className="block px-4 py-3 text-base font-medium text-[var(--theme-text)] rounded-lg hover:bg-[var(--theme-surface-muted)] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {t("common.profile")}
@@ -337,7 +337,7 @@ export default function Header() {
                     <button
                       onClick={handleLogout}
                       disabled={isLoggingOut}
-                      className="w-full px-4 py-3 text-base font-medium text-red-600 rounded-lg hover:bg-red-50 transition-colors text-left flex items-center gap-2"
+                      className="w-full px-4 py-3 text-base font-medium text-[var(--theme-danger)] rounded-lg hover:bg-[rgba(185,75,73,0.08)] transition-colors text-left flex items-center gap-2"
                     >
                       {isLoggingOut ? (
                         <Loader2 className="w-4 h-4 animate-spin" />
@@ -353,14 +353,14 @@ export default function Header() {
                   <>
                     <Link
                       href="/login"
-                      className="block px-4 py-3 text-base font-medium text-zinc-700 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
+                      className="block px-4 py-3 text-base font-medium text-[var(--theme-text)] rounded-lg hover:bg-[var(--theme-surface-muted)] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {t("common.signIn")}
                     </Link>
                     <Link
                       href="/register"
-                      className="block px-4 py-3 text-base font-semibold text-white bg-[#84B179] rounded-lg hover:bg-[#A2CB8B] transition-colors"
+                      className="theme-button-primary block px-4 py-3 text-base font-semibold rounded-lg transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
                       {t("common.getStarted")}

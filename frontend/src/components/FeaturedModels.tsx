@@ -154,20 +154,20 @@ const featuredModels: ModelCardProps[] = [
 export default function FeaturedModels() {
   const router = useRouter();
 
-  const handleCardClick = (id: string) => {
+  const handleCardClick = () => {
     // Navigates to marketplace with specific model selected
     router.push(`/chat-hub`);
   };
 
   return (
-    <section className="py-12 px-12 bg-[#f9f9f8]">
+    <section className="py-12 px-12 bg-transparent">
       <div className=" mx-auto">
         {/* Header */}
         <div className="flex justify-between items-end mb-8">
-          <h2 className="text-3xl font-bold text-zinc-900">Featured Models</h2>
+          <h2 className="text-3xl font-bold text-[var(--theme-text)]">Featured Models</h2>
           <Link
             href="/marketplace"
-            className="text-xs font-bold text-[#BC6D25] flex items-center gap-1 hover:underline tracking-tight"
+            className="text-xs font-bold theme-link flex items-center gap-1 hover:underline tracking-tight"
           >
             Browse all 525 <ArrowRight className="w-3 h-3" />
           </Link>
@@ -178,8 +178,8 @@ export default function FeaturedModels() {
           {featuredModels.map((model) => (
             <div
               key={model.id}
-              onClick={() => handleCardClick(model.id)}
-              className="bg-white border border-zinc-200 rounded-3xl p-5 flex flex-col justify-between hover:shadow-lg hover:border-zinc-300 transition-all cursor-pointer group relative"
+              onClick={handleCardClick}
+              className="theme-panel rounded-3xl p-5 flex flex-col justify-between hover:shadow-lg hover:border-[var(--theme-border-strong)] transition-all cursor-pointer group relative"
             >
               {/* Top Row: Icon and Badge */}
               <div className="flex justify-between items-start mb-4">
@@ -192,8 +192,8 @@ export default function FeaturedModels() {
                   <span
                     className={`text-[10px] font-bold px-2 py-0.5 rounded-full border ${
                       model.badge === "Hot"
-                        ? "bg-orange-50 text-orange-600 border-orange-100"
-                        : "bg-emerald-50 text-emerald-600 border-emerald-100"
+                        ? "bg-[rgba(232,245,189,0.4)] text-[var(--theme-accent-hover)] border-[var(--theme-border-strong)]"
+                        : "bg-[rgba(215,233,196,0.5)] text-[var(--theme-accent-strong)] border-[var(--theme-border-strong)]"
                     }`}
                   >
                     {model.badge}
@@ -203,16 +203,16 @@ export default function FeaturedModels() {
 
               {/* Title & Provider */}
               <div className="mb-3">
-                <h3 className="text-sm font-bold text-zinc-900">
+                <h3 className="text-sm font-bold text-[var(--theme-text)]">
                   {model.name}
                 </h3>
-                <p className="text-[10px] font-medium text-zinc-400">
+                <p className="text-[10px] font-medium text-[var(--theme-text-muted)]">
                   {model.provider}
                 </p>
               </div>
 
               {/* Description */}
-              <p className="text-[11px] text-zinc-500 leading-relaxed mb-4 line-clamp-3">
+              <p className="text-[11px] text-[var(--theme-text-muted)] leading-relaxed mb-4 line-clamp-3">
                 {model.description}
               </p>
 
@@ -221,7 +221,7 @@ export default function FeaturedModels() {
                 {model.tags.map((tag) => (
                   <span
                     key={tag}
-                    className="text-[9px] font-bold text-blue-600 bg-blue-50 px-2 py-0.5 rounded-full border border-blue-100"
+                    className="text-[9px] font-bold text-[var(--theme-accent-hover)] bg-[rgba(232,245,189,0.34)] px-2 py-0.5 rounded-full border border-[var(--theme-border-strong)]"
                   >
                     {tag}
                   </span>
@@ -229,7 +229,7 @@ export default function FeaturedModels() {
               </div>
 
               {/* Footer: Rating, Price, Try */}
-              <div className="pt-4 border-t border-zinc-50">
+              <div className="pt-4 border-t border-[var(--theme-border)]">
                 <div className="flex items-center gap-1 mb-2">
                   <div className="flex gap-0.5">
                     {[...Array(4)].map((_, i) => (
@@ -239,16 +239,16 @@ export default function FeaturedModels() {
                       />
                     ))}
                   </div>
-                  <span className="text-[10px] font-bold text-zinc-400">
+                  <span className="text-[10px] font-bold text-[var(--theme-text-muted)]">
                     {model.rating} ({model.reviews})
                   </span>
                 </div>
 
                 <div className="flex justify-between items-center mt-3">
-                  <span className="text-[11px] font-bold text-[#1E634B]">
+                  <span className="text-[11px] font-bold text-[var(--theme-accent-hover)]">
                     {model.price}
                   </span>
-                  <span className="text-[10px] font-bold text-[#BC6D25] flex items-center gap-1 group-hover:translate-x-1 transition-transform">
+                  <span className="text-[10px] font-bold theme-link flex items-center gap-1 group-hover:translate-x-1 transition-transform">
                     Try <ArrowRight className="w-2.5 h-2.5" />
                   </span>
                 </div>

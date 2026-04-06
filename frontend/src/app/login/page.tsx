@@ -71,16 +71,16 @@ export default function LoginPage() {
   };
 
   return (
-    <div className="min-h-screen flex flex-col bg-white">
+    <div className="min-h-screen flex flex-col theme-page">
       <Header />
       <main className="flex-1 pt-24 px-4 sm:px-6 lg:px-8">
         <div className="max-w-md mx-auto py-10">
-          <div className="rounded-2xl border border-zinc-200 bg-white shadow-sm p-8">
+          <div className="theme-panel rounded-2xl p-8">
             <div className="text-center mb-8">
-              <h1 className="text-3xl font-bold text-zinc-900 mb-2">
+              <h1 className="text-3xl font-bold text-[var(--theme-text)] mb-2">
                 {t("auth.login.title")}
               </h1>
-              <p className="text-zinc-600">{t("auth.login.subtitle")}</p>
+              <p className="text-[var(--theme-text-muted)]">{t("auth.login.subtitle")}</p>
             </div>
 
             {error && (
@@ -93,7 +93,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="email"
-                  className="block text-sm font-medium text-zinc-700 mb-2"
+                  className="block text-sm font-medium text-[var(--theme-text)] mb-2"
                 >
                   {t("auth.emailAddress")}
                 </label>
@@ -103,7 +103,7 @@ export default function LoginPage() {
                   name="email"
                   value={formData.email}
                   onChange={handleChange}
-                  className={`w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179] focus:border-transparent transition-all ${
+                  className={`theme-input w-full px-4 py-3 rounded-lg transition-all ${
                     formErrors.email ? "border-red-500" : ""
                   }`}
                   placeholder="you@example.com"
@@ -119,7 +119,7 @@ export default function LoginPage() {
               <div>
                 <label
                   htmlFor="password"
-                  className="block text-sm font-medium text-zinc-700 mb-2"
+                  className="block text-sm font-medium text-[var(--theme-text)] mb-2"
                 >
                   {t("auth.password")}
                 </label>
@@ -130,7 +130,7 @@ export default function LoginPage() {
                     name="password"
                     value={formData.password}
                     onChange={handleChange}
-                    className={`w-full px-4 py-3 bg-white border border-zinc-300 rounded-lg text-zinc-900 placeholder-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179] focus:border-transparent transition-all ${
+                    className={`theme-input w-full px-4 py-3 rounded-lg transition-all ${
                       formErrors.password ? "border-red-500" : ""
                     }`}
                     placeholder="••••••••"
@@ -139,7 +139,7 @@ export default function LoginPage() {
                   <button
                     type="button"
                     onClick={() => setShowPassword(!showPassword)}
-                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-zinc-400 hover:text-zinc-700 transition-colors"
+                    className="absolute right-3 top-1/2 transform -translate-y-1/2 text-[var(--theme-text-muted)] hover:text-[var(--theme-text)] transition-colors"
                   >
                     {showPassword ? (
                       <svg
@@ -189,15 +189,15 @@ export default function LoginPage() {
                 <label className="flex items-center">
                   <input
                     type="checkbox"
-                    className="w-4 h-4 rounded border-gray-600 text-blue-600 focus:ring-blue-500"
+                    className="w-4 h-4 rounded border-[var(--theme-border-strong)] text-[var(--theme-accent-strong)] focus:ring-[var(--theme-accent)]"
                   />
-                  <span className="ml-2 text-sm text-zinc-600">
+                  <span className="ml-2 text-sm text-[var(--theme-text-muted)]">
                     {t("auth.rememberMe")}
                   </span>
                 </label>
                 <Link
                   href="/forgot-password"
-                  className="text-sm text-[#84B179] hover:text-[#6f9766] transition-colors"
+                  className="text-sm theme-link transition-colors"
                 >
                   {t("auth.forgotPassword")}
                 </Link>
@@ -206,7 +206,7 @@ export default function LoginPage() {
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="w-full py-3 px-4 bg-[#84B179] hover:bg-[#6f9766] text-white font-semibold rounded-lg shadow-sm transform transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
+                className="theme-button-primary w-full py-3 px-4 font-semibold rounded-lg shadow-sm transform transition-all hover:scale-[1.02] active:scale-[0.98] disabled:opacity-50 disabled:cursor-not-allowed"
               >
                 {isSubmitting ? (
                   <span className="flex items-center justify-center">
@@ -238,11 +238,11 @@ export default function LoginPage() {
             </form>
 
             <div className="mt-6 text-center">
-              <p className="text-zinc-500">
+              <p className="text-[var(--theme-text-muted)]">
                 {t("auth.noAccount")}{" "}
                 <Link
                   href="/register"
-                  className="text-[#84B179] hover:text-[#6f9766] font-semibold transition-colors"
+                  className="theme-link font-semibold transition-colors"
                 >
                   {t("auth.signUp")}
                 </Link>

@@ -55,10 +55,10 @@ export default function FindModelsByBudget() {
   };
 
   return (
-    <section className="py-12 px-12 sm:px-8 lg:px-12 bg-[#F9F9F8] font-sans">
+    <section className="py-12 px-12 sm:px-8 lg:px-12 bg-transparent font-sans">
       <div className=" mx-auto">
         {/* Section Header */}
-        <h2 className="text-3xl font-bold text-zinc-900 mb-10 tracking-tight">
+        <h2 className="text-3xl font-bold text-[var(--theme-text)] mb-10 tracking-tight">
           Find Models by Budget
         </h2>
 
@@ -68,7 +68,7 @@ export default function FindModelsByBudget() {
             <div
               key={index}
               onClick={handleNavigation}
-              className={`${card.bgColor} ${card.borderColor} border rounded-[2rem] p-8 flex flex-col h-full cursor-pointer hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 group`}
+              className="theme-panel rounded-[2rem] p-8 flex flex-col h-full cursor-pointer hover:shadow-xl hover:translate-y-[-4px] transition-all duration-300 group"
             >
               {/* Icon Container */}
               <div
@@ -78,21 +78,17 @@ export default function FindModelsByBudget() {
               </div>
 
               {/* Title */}
-              <h3
-                className={`text-[15px] font-bold ${card.textColor} mb-3 leading-tight`}
-              >
+              <h3 className="text-[15px] font-bold text-[var(--theme-text)] mb-3 leading-tight">
                 {card.title}
               </h3>
 
               {/* Description */}
-              <p className="text-[12px] text-zinc-500 leading-relaxed font-medium mb-6 flex-grow">
+              <p className="text-[12px] text-[var(--theme-text-muted)] leading-relaxed font-medium mb-6 flex-grow">
                 {card.desc}
               </p>
 
               {/* Footer Link */}
-              <div
-                className={`mt-auto text-[11px] font-black flex items-center gap-1.5 ${card.textColor} tracking-tight group-hover:underline`}
-              >
+              <div className="mt-auto text-[11px] font-black flex items-center gap-1.5 text-[var(--theme-accent-hover)] tracking-tight group-hover:underline">
                 {card.count}{" "}
                 <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
               </div>
