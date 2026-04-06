@@ -3,7 +3,19 @@ import { SimulateChatResponse } from '../types/chat.types';
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
 
+export type UploadedAttachmentMeta = {
+  id: string;
+  kind: 'document' | 'image' | 'video' | 'screen';
+  name: string;
+  mimeType: string;
+  size: number;
+};
+
 export class ChatService {
+  static apiUrl() {
+    return API_URL;
+  }
+
   static async simulate(
     message: string,
     modelId?: string,
@@ -33,5 +45,17 @@ export class ChatService {
       timeout: 30000,
     });
     return response.data;
+  }
+
+  static async uploadAttachments(files: File[]): Promise<UploadedAttachmentMeta[]> {
+    const form = new FormData();
+    for (const f of files) form.append('files', f, f.name);
+
+    const res = await axios.post<{ attachments: UploadedAttachmentMeta[] }>(
+      `${API_URL}/chat/upload`,
+      form,
+      { timeout: 30000 },
+    );
+    return res.data.attachments ?? [];
   }
 }

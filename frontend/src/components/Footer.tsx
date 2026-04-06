@@ -8,6 +8,7 @@ import { FaGithub, FaXTwitter, FaLinkedin, FaYoutube } from "react-icons/fa6";
 // Switched to HiSparkles and IoSend for better compatibility
 import { HiSparkles } from "react-icons/hi2";
 import { IoSend } from "react-icons/io5";
+import { useI18n } from "./I18nProvider";
 
 const footerLinks = {
   product: [
@@ -43,6 +44,7 @@ const socialLinks = [
 ];
 
 export default function Footer() {
+  const { t } = useI18n();
   const [email, setEmail] = useState("");
   const [isSubscribed, setIsSubscribed] = useState(false);
 
@@ -67,11 +69,10 @@ export default function Footer() {
             transition={{ duration: 0.5 }}
           >
             <h3 className="text-2xl font-bold text-zinc-900 mb-3">
-              Subscribe for updates and latest AI models
+              {t("footer.newsTitle")}
             </h3>
             <p className="text-zinc-600 mb-6">
-              Stay informed about new model releases, platform updates, and AI
-              industry insights.
+              {t("footer.newsSubtitle")}
             </p>
 
             <form
@@ -82,10 +83,10 @@ export default function Footer() {
                 type="email"
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                placeholder="Enter your email"
+                placeholder={t("footer.emailPlaceholder")}
                 className="flex-1 px-4 py-3 rounded-xl bg-zinc-50 border border-zinc-200 text-zinc-900 placeholder:text-zinc-500 focus:outline-none focus:ring-2 focus:ring-[#84B179]/20 focus:border-[#84B179] transition-colors"
                 required
-                aria-label="Email for newsletter subscription"
+                aria-label={t("footer.emailAria")}
               />
               <motion.button
                 type="submit"
@@ -93,7 +94,7 @@ export default function Footer() {
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
-                <span>Subscribe</span>
+                <span>{t("footer.subscribe")}</span>
                 <IoSend className="w-4 h-4" />
               </motion.button>
             </form>
@@ -104,7 +105,7 @@ export default function Footer() {
                 animate={{ opacity: 1, y: 0 }}
                 className="mt-4 text-sm text-[#84B179]"
               >
-                Thank you for subscribing! We&apos;ll keep you updated.
+                {t("footer.subscribed")}
               </motion.p>
             )}
           </motion.div>
@@ -120,13 +121,10 @@ export default function Footer() {
               <div className="w-10 h-10 rounded-xl bg-[#84B179] flex items-center justify-center">
                 <HiSparkles className="w-5 h-5 text-white" />
               </div>
-              <span className="text-xl font-bold text-zinc-900">
-                NexusAI
-              </span>
+              <span className="text-xl font-bold text-zinc-900">NexusAI</span>
             </Link>
             <p className="text-sm text-zinc-600 mb-6 max-w-xs">
-              Discover, compare, and deploy the perfect AI models for your
-              needs. Join thousands of developers and businesses.
+              {t("footer.brandText")}
             </p>
 
             {/* Social Links */}
@@ -148,9 +146,7 @@ export default function Footer() {
 
           {/* Product Links */}
           <div>
-            <h4 className="font-semibold text-zinc-900 mb-4">
-              Product
-            </h4>
+            <h4 className="font-semibold text-zinc-900 mb-4">{t("footer.product")}</h4>
             <ul className="space-y-3">
               {footerLinks.product.map((link) => (
                 <li key={link.name}>
@@ -167,9 +163,7 @@ export default function Footer() {
 
           {/* Resources Links */}
           <div>
-            <h4 className="font-semibold text-zinc-900 mb-4">
-              Resources
-            </h4>
+            <h4 className="font-semibold text-zinc-900 mb-4">{t("footer.resources")}</h4>
             <ul className="space-y-3">
               {footerLinks.resources.map((link) => (
                 <li key={link.name}>
@@ -186,9 +180,7 @@ export default function Footer() {
 
           {/* Company Links */}
           <div>
-            <h4 className="font-semibold text-zinc-900 mb-4">
-              Company
-            </h4>
+            <h4 className="font-semibold text-zinc-900 mb-4">{t("footer.company")}</h4>
             <ul className="space-y-3">
               {footerLinks.company.map((link) => (
                 <li key={link.name}>
@@ -205,9 +197,7 @@ export default function Footer() {
 
           {/* Legal Links */}
           <div>
-            <h4 className="font-semibold text-zinc-900 mb-4">
-              Legal
-            </h4>
+            <h4 className="font-semibold text-zinc-900 mb-4">{t("footer.legal")}</h4>
             <ul className="space-y-3">
               {footerLinks.legal.map((link) => (
                 <li key={link.name}>
@@ -229,26 +219,26 @@ export default function Footer() {
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
           <div className="flex flex-col sm:flex-row items-center justify-between gap-4">
             <p className="text-sm text-zinc-500">
-              &copy; {new Date().getFullYear()} NexusAI. All rights reserved.
+              &copy; {new Date().getFullYear()} NexusAI. {t("footer.rights")}
             </p>
             <div className="flex items-center gap-6">
               <a
                 href="#privacy"
                 className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
               >
-                Privacy
+                {t("footer.privacyShort")}
               </a>
               <a
                 href="#terms"
                 className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
               >
-                Terms
+                {t("footer.termsShort")}
               </a>
               <a
                 href="#cookies"
                 className="text-sm text-zinc-500 hover:text-zinc-900 transition-colors"
               >
-                Cookies
+                {t("footer.cookiesShort")}
               </a>
             </div>
           </div>

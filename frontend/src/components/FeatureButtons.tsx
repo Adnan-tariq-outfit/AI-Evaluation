@@ -18,10 +18,11 @@ import {
   Telescope,
 } from "lucide-react";
 import Link from "next/link";
+import { useI18n } from "./I18nProvider";
 
 interface FeatureButton {
   icon: React.ReactNode;
-  label: string;
+  labelKey: string;
   color: string;
   bgColor: string;
 }
@@ -29,85 +30,85 @@ interface FeatureButton {
 const features: FeatureButton[] = [
   {
     icon: <Palette className="w-5 h-5" />,
-    label: "Create image",
+    labelKey: "feature.createImage",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <Music className="w-5 h-5" />,
-    label: "Generate Audio",
+    labelKey: "feature.generateAudio",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <Video className="w-5 h-5" />,
-    label: "Create video",
+    labelKey: "feature.createVideo",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <Presentation className="w-5 h-5" />,
-    label: "Create slides",
+    labelKey: "feature.createSlides",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <BarChart3 className="w-5 h-5" />,
-    label: "Create Infographs",
+    labelKey: "feature.createInfographs",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <HelpCircle className="w-5 h-5" />,
-    label: "Create quiz",
+    labelKey: "feature.createQuiz",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <Files className="w-5 h-5" />,
-    label: "Create Flashcards",
+    labelKey: "feature.createFlashcards",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <Brain className="w-5 h-5" />,
-    label: "Create Mind map",
+    labelKey: "feature.createMindMap",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <LineChart className="w-5 h-5" />,
-    label: "Analyze Data",
+    labelKey: "feature.analyzeData",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <PencilLine className="w-5 h-5" />,
-    label: "Write content",
+    labelKey: "feature.writeContent",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <Code2 className="w-5 h-5" />,
-    label: "Code Generation",
+    labelKey: "feature.codeGeneration",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <FileText className="w-5 h-5" />,
-    label: "Document Analysis",
+    labelKey: "feature.documentAnalysis",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <Globe className="w-5 h-5" />,
-    label: "Translate",
+    labelKey: "feature.translate",
     color: "text-[#84B179]",
     bgColor: "bg-[#E8F5BD]/50 hover:bg-[#C7EABB]/70",
   },
   {
     icon: <Telescope className="w-5 h-5" />,
-    label: "Just Exploring",
+    labelKey: "feature.justExploring",
     color: "text-[#84B179]",
     // Note: In the image, this button has a dashed border
     bgColor:
@@ -137,6 +138,7 @@ const itemVariants = {
 };
 
 export default function FeatureButtons() {
+  const { t } = useI18n();
   return (
     <section className="py-8 px-4 sm:px-6 lg:px-8 bg-white">
       <motion.div
@@ -153,7 +155,7 @@ export default function FeatureButtons() {
         >
           {features.map((feature) => (
             <motion.button
-              key={feature.label}
+              key={feature.labelKey}
               variants={itemVariants}
               className={`group flex items-center gap-2.5 px-5 py-3 rounded-full ${feature.bgColor} transition-all duration-200 border border-transparent hover:border-[#84B179]/30`}
               whileHover={{ scale: 1.03, y: -2 }}
@@ -165,7 +167,7 @@ export default function FeatureButtons() {
                 {feature.icon}
               </span>
               <span className="text-sm font-medium text-zinc-700 whitespace-nowrap">
-                {feature.label}
+                {t(feature.labelKey)}
               </span>
             </motion.button>
           ))}
@@ -174,14 +176,14 @@ export default function FeatureButtons() {
         {/* Additional Info */}
         <motion.div variants={itemVariants} className="mt-10 text-center">
           <p className="text-sm text-zinc-500">
-            Or browse our{" "}
+            {t("feature.orBrowse")}{" "}
             <Link
               href="/marketplace"
               className="text-[#84B179] font-medium hover:underline"
             >
-              complete marketplace
+              {t("feature.completeMarketplace")}
             </Link>{" "}
-            of 525+ models
+            {t("feature.ofModels")}
           </p>
         </motion.div>
       </motion.div>

@@ -12,35 +12,28 @@ import {
   Sparkles,
   User,
   LogOut,
-  Settings,
   Loader2,
 } from "lucide-react";
 import { useAuth } from "../hooks/useAuth";
+import { useI18n } from "./I18nProvider";
+import { LanguageCode } from "../lib/i18n";
 
 const navLinks = [
-  { name: "Chat Hub", href: "/chat-hub" },
-  { name: "Marketplace", href: "/marketplace" },
-  { name: "Discover New", href: "/discover-new" },
-  { name: "Agents", href: "/agents" },
-];
-
-const languages = [
-  { code: "en", name: "English" },
-  { code: "es", name: "Español" },
-  { code: "fr", name: "Français" },
-  { code: "de", name: "Deutsch" },
-  { code: "zh", name: "中文" },
+  { key: "nav.chatHub", href: "/chat-hub" },
+  { key: "nav.marketplace", href: "/marketplace" },
+  { key: "nav.discoverNew", href: "/discover-new" },
+  { key: "nav.agents", href: "/agents" },
 ];
 
 export default function Header() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { t, language, setLanguage, languages } = useI18n();
 
   const [isScrolled, setIsScrolled] = useState(false);
   const [isLanguageOpen, setIsLanguageOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
   const [isUserMenuOpen, setIsUserMenuOpen] = useState(false);
-  const [selectedLanguage, setSelectedLanguage] = useState(languages[0]);
   const [isLoggingOut, setIsLoggingOut] = useState(false);
 
   const userMenuRef = useRef<HTMLDivElement>(null);
@@ -70,8 +63,10 @@ export default function Header() {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-  const handleLanguageSelect = (language: (typeof languages)[0]) => {
-    setSelectedLanguage(language);
+  const languageList = Object.values(languages);
+
+  const handleLanguageSelect = (nextLanguage: LanguageCode) => {
+    setLanguage(nextLanguage);
     setIsLanguageOpen(false);
   };
 
@@ -115,7 +110,7 @@ export default function Header() {
           <nav className="hidden md:flex items-center gap-1">
             {navLinks.map((link) => (
               <motion.div
-                key={link.name}
+                key={link.key}
                 whileHover={{ scale: 1.02 }}
                 whileTap={{ scale: 0.98 }}
               >
@@ -123,7 +118,7 @@ export default function Header() {
                   href={link.href}
                   className="px-4 py-2 text-sm font-medium text-zinc-600 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors inline-block"
                 >
-                  {link.name}
+                  {t(link.key)}
                 </Link>
               </motion.div>
             ))}
@@ -142,7 +137,7 @@ export default function Header() {
                 aria-haspopup="listbox"
               >
                 <Globe className="w-4 h-4" />
-                <span>{selectedLanguage.code.toUpperCase()}</span>
+                <span>{language.toUpperCase()}</span>
                 <ChevronDown
                   className={`w-4 h-4 transition-transform ${
                     isLanguageOpen ? "rotate-180" : ""
@@ -160,19 +155,19 @@ export default function Header() {
                     className="absolute right-0 mt-2 w-40 bg-white rounded-xl shadow-lg border border-zinc-100 overflow-hidden z-50"
                     role="listbox"
                   >
-                    {languages.map((language) => (
+                    {languageList.map((item) => (
                       <button
-                        key={language.code}
-                        onClick={() => handleLanguageSelect(language)}
+                        key={item.code}
+                        onClick={() => handleLanguageSelect(item.code)}
                         className={`w-full px-4 py-2.5 text-sm text-left hover:bg-zinc-50 transition-colors ${
-                          selectedLanguage.code === language.code
+                          language === item.code
                             ? "text-[#84B179] font-medium"
                             : "text-zinc-700"
                         }`}
                         role="option"
-                        aria-selected={selectedLanguage.code === language.code}
+                        aria-selected={language === item.code}
                       >
-                        {language.name}
+                        {item.name}
                       </button>
                     ))}
                   </motion.div>
@@ -228,7 +223,7 @@ export default function Header() {
                           onClick={() => setIsUserMenuOpen(false)}
                         >
                           <User className="w-4 h-4" />
-                          Profile
+                          {t("common.profile")}
                         </Link>
 
                         <button
@@ -241,7 +236,9 @@ export default function Header() {
                           ) : (
                             <LogOut className="w-4 h-4" />
                           )}
-                          {isLoggingOut ? "Logging out..." : "Log out"}
+                          {isLoggingOut
+                            ? t("common.loggingOut")
+                            : t("common.logOut")}
                         </button>
                       </div>
                     </motion.div>
@@ -256,7 +253,7 @@ export default function Header() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Sign In
+                    {t("common.signIn")}
                   </motion.button>
                 </Link>
                 <Link href="/login">
@@ -265,7 +262,7 @@ export default function Header() {
                     whileHover={{ scale: 1.02 }}
                     whileTap={{ scale: 0.98 }}
                   >
-                    Get Started
+                    {t("common.getStarted")}
                   </motion.button>
                 </Link>
               </>
@@ -278,7 +275,7 @@ export default function Header() {
             className="md:hidden p-2 text-zinc-600 rounded-lg hover:bg-zinc-50 transition-colors"
             whileHover={{ scale: 1.05 }}
             whileTap={{ scale: 0.95 }}
-            aria-label="Toggle menu"
+            aria-label={t("common.toggleMenu")}
           >
             {isMobileMenuOpen ? (
               <X className="w-6 h-6" />
@@ -302,12 +299,12 @@ export default function Header() {
             <div className="px-4 py-4 space-y-2">
               {navLinks.map((link) => (
                 <Link
-                  key={link.name}
+                  key={link.key}
                   href={link.href}
                   className="block px-4 py-3 text-base font-medium text-zinc-600 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
                   onClick={() => setIsMobileMenuOpen(false)}
                 >
-                  {link.name}
+                  {t(link.key)}
                 </Link>
               ))}
 
@@ -335,7 +332,7 @@ export default function Header() {
                       className="block px-4 py-3 text-base font-medium text-zinc-700 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Profile
+                      {t("common.profile")}
                     </Link>
                     <button
                       onClick={handleLogout}
@@ -347,7 +344,9 @@ export default function Header() {
                       ) : (
                         <LogOut className="w-4 h-4" />
                       )}
-                      {isLoggingOut ? "Logging out..." : "Log out"}
+                      {isLoggingOut
+                        ? t("common.loggingOut")
+                        : t("common.logOut")}
                     </button>
                   </>
                 ) : (
@@ -357,14 +356,14 @@ export default function Header() {
                       className="block px-4 py-3 text-base font-medium text-zinc-700 rounded-lg hover:text-zinc-900 hover:bg-zinc-50 transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Sign In
+                      {t("common.signIn")}
                     </Link>
                     <Link
                       href="/register"
                       className="block px-4 py-3 text-base font-semibold text-white bg-[#84B179] rounded-lg hover:bg-[#A2CB8B] transition-colors"
                       onClick={() => setIsMobileMenuOpen(false)}
                     >
-                      Get Started
+                      {t("common.getStarted")}
                     </Link>
                   </>
                 )}

@@ -8,10 +8,12 @@ import Footer from '../../components/Footer';
 import { useAuth } from '../../hooks/useAuth';
 import { AuthService } from '../../services/auth.service';
 import type { User } from '../../types/auth.types';
+import { useI18n } from '../../components/I18nProvider';
 
 export default function ProfilePage() {
   const router = useRouter();
   const { user, isAuthenticated, isLoading, logout } = useAuth();
+  const { t } = useI18n();
   const [serverUser, setServerUser] = useState<User | null>(null);
   const [serverLoading, setServerLoading] = useState(false);
 
@@ -65,7 +67,7 @@ export default function ProfilePage() {
                 }}
                 className="px-4 py-2 text-sm font-semibold text-white bg-[#84B179] rounded-lg hover:bg-[#A2CB8B] transition-colors"
               >
-                Log out
+                {t("common.logOut")}
               </button>
             </div>
           </div>

@@ -3,6 +3,7 @@
 import Header from "../../components/Header";
 import Footer from "../../components/Footer";
 import { useRouter } from "next/navigation";
+import { useI18n } from "../../components/I18nProvider";
 
 const feedItems = [
   {
@@ -59,13 +60,14 @@ const feedItems = [
 
 export default function DiscoverNewPage() {
   const router = useRouter();
+  const { t } = useI18n();
   return (
     <div className="min-h-screen flex flex-col bg-[#f7f7f5]">
       <Header />
       <main className="flex-1 pt-24 px-3 sm:px-4 lg:px-6">
         <div className="">
           <h1 className="text-3xl font-semibold text-zinc-900 mb-5">
-            AI Research Feed
+            {t("discover.title")}
           </h1>
 
           <div className="space-y-3 pb-8 flex flex-col justify-center items-center">

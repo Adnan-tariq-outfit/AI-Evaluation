@@ -1,17 +1,15 @@
 "use client";
 
-import { useState } from "react";
-import { useRouter } from "next/navigation";
 import { motion } from "framer-motion";
 import {
   Mic,
   Video,
   Image as ImageIcon,
   Paperclip,
-  ArrowRight,
 } from "lucide-react";
 import FeatureButtons from "./FeatureButtons";
 import ChatInputBarLanding from "./ChatInputBarLanding";
+import { useI18n } from "./I18nProvider";
 
 interface MediaButtonProps {
   icon: React.ReactNode;
@@ -34,9 +32,8 @@ function MediaButton({ icon, label, onClick }: MediaButtonProps) {
 }
 
 export default function HeroSection() {
-  const router = useRouter();
-  const [searchValue, setSearchValue] = useState("");
-  const [isFocused, setIsFocused] = useState(false);
+  const isFocused = false;
+  const { t } = useI18n();
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -54,7 +51,7 @@ export default function HeroSection() {
     visible: {
       opacity: 1,
       y: 0,
-      transition: { duration: 0.5, ease: "easeOut" },
+      transition: { duration: 0.5, ease: "easeOut" as const },
     },
   };
 
@@ -73,7 +70,7 @@ export default function HeroSection() {
         <motion.div variants={itemVariants} className="mb-6">
           <span className="inline-flex items-center gap-2 px-4 py-2 rounded-full bg-[#C7EABB]/30 text-[#6a9a5d] text-sm font-medium">
             <span className="w-2 h-2 rounded-full bg-[#84B179] animate-pulse" />
-            525+ AI Models Available
+            {t("hero.availableModels")}
           </span>
         </motion.div>
 
@@ -82,14 +79,14 @@ export default function HeroSection() {
           variants={itemVariants}
           className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-bold text-zinc-900 tracking-tight leading-[1.1] mb-6"
         >
-          Find your perfect{" "}
+          {t("hero.titleLine1")}{" "}
           <span
             className="text-[#84B179] block
           "
           >
-            AI model
+            {t("hero.titleLine2")}
           </span>{" "}
-          with guided <br /> discovery
+          {t("hero.titleLine3")}
         </motion.h1>
 
         {/* Subtext */}
@@ -97,9 +94,7 @@ export default function HeroSection() {
           variants={itemVariants}
           className="text-lg sm:text-xl text-zinc-600 max-w-2xl mx-auto mb-10 leading-relaxed"
         >
-          Discover, compare, and deploy AI models through intuitive
-          conversations. Our guided experience helps you find exactly what you
-          need in minutes.
+          {t("hero.subtitle")}
         </motion.p>
 
         {/* Search Bar */}
@@ -112,7 +107,7 @@ export default function HeroSection() {
             }}
             className="relative bg-white rounded-2xl border border-zinc-100 overflow-hidden shadow-sm"
           >
-            <section >
+            <section>
               <ChatInputBarLanding />
             </section>
 
@@ -120,19 +115,19 @@ export default function HeroSection() {
             <div className="sm:hidden flex items-center justify-center gap-2 px-4 pb-3 pt-1">
               <MediaButton
                 icon={<Mic className="w-5 h-5" />}
-                label="Voice input"
+                  label={t("input.startVoice")}
               />
               <MediaButton
                 icon={<Video className="w-5 h-5" />}
-                label="Video input"
+                  label={t("input.uploadVideo")}
               />
               <MediaButton
                 icon={<ImageIcon className="w-5 h-5" />}
-                label="Image input"
+                  label={t("input.uploadImage")}
               />
               <MediaButton
                 icon={<Paperclip className="w-5 h-5" />}
-                label="Attach file"
+                  label={t("input.uploadDocument")}
               />
             </div>
           </motion.div>

@@ -7,8 +7,6 @@ export type PendingUpload = {
 export type PendingChatPayload = {
   text: string;
   uploads: PendingUpload[];
-  assistantReply?: { reply: string; timestamp: string };
-  model?: { id: string; name: string; provider: string } | null;
 };
 
 let pending: PendingChatPayload | null = null;

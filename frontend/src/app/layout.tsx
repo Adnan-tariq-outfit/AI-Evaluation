@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import "./globals.css";
 import { AuthProvider } from "../components/auth/AuthProvider";
+import { I18nProvider } from "../components/I18nProvider";
 
 const inter = Inter({
   variable: "--font-inter",
@@ -45,7 +46,9 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col font-sans">
-        <AuthProvider>{children}</AuthProvider>
+        <AuthProvider>
+          <I18nProvider>{children}</I18nProvider>
+        </AuthProvider>
       </body>
     </html>
   );

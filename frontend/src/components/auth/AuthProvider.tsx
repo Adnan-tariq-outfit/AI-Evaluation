@@ -5,6 +5,8 @@ import { Provider, useDispatch } from 'react-redux';
 import { store } from '../../store';
 import { AppDispatch } from '../../store';
 import { initializeAuth } from '../../store/slices/authSlice';
+import { clearChatHistory } from '../../lib/chatHistory';
+import { AuthService } from '../../services/auth.service';
 
 // Inner component that drives auth initialization — lives inside <Provider>
 function AuthInitializer({ children }: { children: ReactNode }) {
@@ -19,6 +21,23 @@ function AuthInitializer({ children }: { children: ReactNode }) {
       dispatch(initializeAuth());
     }
   }, [dispatch]);
+
+  useEffect(() => {
+    const handlePageClose = () => {
+      // Preserve history for authenticated users across sessions/tabs.
+      // Guests should not retain chat history after closing the site/tab.
+      if (!AuthService.isAuthenticated()) {
+        clearChatHistory();
+      }
+    };
+
+    window.addEventListener('beforeunload', handlePageClose);
+    window.addEventListener('pagehide', handlePageClose);
+    return () => {
+      window.removeEventListener('beforeunload', handlePageClose);
+      window.removeEventListener('pagehide', handlePageClose);
+    };
+  }, []);
 
   // ⚠️ DO NOT block rendering on isLoading.
   // Individual components (Header, etc.) already show their own skeleton/spinner

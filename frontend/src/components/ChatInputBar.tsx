@@ -11,6 +11,7 @@ import {
   Bot,
 } from "lucide-react";
 import type { ReactNode } from "react";
+import { useI18n } from "./I18nProvider";
 
 const DEFAULT_TAB_DATA: Record<string, string[]> = {
   Recruiting: [
@@ -121,6 +122,7 @@ export function ChatInputBar({
   disabled,
 }: ChatInputBarProps) {
   const router = useRouter();
+  const { t } = useI18n();
   const tabs = Object.keys(tabData);
   const [activeTab, setActiveTab] = useState<string>(tabs[0] ?? "Recruiting");
   const [isRecording, setIsRecording] = useState(false);
@@ -207,7 +209,7 @@ export function ChatInputBar({
   const handleStartStopRecording = () => {
     const recognition = recognitionRef.current;
     if (!recognition) {
-      alert("Voice input is not supported in this browser.");
+      alert(t("input.browserVoiceUnsupported"));
       return;
     }
 
@@ -280,12 +282,12 @@ export function ChatInputBar({
             ) : (
               <span className="font-medium">
                 {u.type === "document"
-                  ? "Doc"
+                  ? t("input.fileTag.doc")
                   : u.type === "video"
-                    ? "Video"
+                    ? t("input.fileTag.video")
                     : u.type === "screen"
-                      ? "Screen"
-                      : "Image"}
+                      ? t("input.fileTag.screen")
+                      : t("input.fileTag.image")}
               </span>
             )}
             <span className="max-w-[180px] truncate">{u.file.name}</span>
@@ -300,7 +302,7 @@ export function ChatInputBar({
       <div className="flex items-center gap-2 rounded-2xl border border-zinc-200 bg-zinc-50 px-3 py-2">
         <div className="flex items-center gap-1">
           <IconButton
-            label={isRecording ? "Stop voice input" : "Start voice input"}
+            label={isRecording ? t("input.stopVoice") : t("input.startVoice")}
             onClick={handleStartStopRecording}
             icon={
               <Mic
@@ -312,29 +314,29 @@ export function ChatInputBar({
             active={isRecording}
           />
           <IconButton
-            label="Upload document or file"
+            label={t("input.uploadDocument")}
             onClick={() => docInputRef.current?.click()}
             icon={<Paperclip className="h-4 w-4" />}
           />
           <IconButton
-            label="Upload image"
+            label={t("input.uploadImage")}
             onClick={() => imageInputRef.current?.click()}
             icon={<ImageIcon className="h-4 w-4" />}
           />
           <IconButton
-            label="Upload video"
+            label={t("input.uploadVideo")}
             onClick={() => videoInputRef.current?.click()}
             icon={<Video className="h-4 w-4" />}
           />
           <IconButton
-            label="Share screen (UI only)"
+            label={t("input.shareScreen")}
             onClick={() => {
-              alert("Screen capture UI placeholder – not implemented yet.");
+              alert(t("input.screenCapturePlaceholder"));
             }}
             icon={<MonitorUp className="h-4 w-4" />}
           />
           <IconButton
-            label="Go to Agents"
+            label={t("input.goToAgents")}
             onClick={() => router.push("/agents")}
             icon={<Bot className="h-4 w-4" />}
           />
@@ -343,7 +345,7 @@ export function ChatInputBar({
         <input
           value={value}
           onChange={(e) => onChange(e.target.value)}
-          placeholder="Click here and type anything — or just say hi! 👋"
+          placeholder={t("input.placeholder")}
           onKeyDown={(e) => {
             if (e.key !== "Enter" || e.shiftKey) return;
             e.preventDefault();
@@ -358,7 +360,7 @@ export function ChatInputBar({
           disabled={disabled}
           className="ml-2 inline-flex items-center rounded-full bg-[#84B179] px-4 py-1.5 text-sm font-semibold text-white shadow-sm  disabled:opacity-50 disabled:cursor-not-allowed"
         >
-          Let&apos;s go
+          {t("input.letsGo")}
         </button>
       </div>
 

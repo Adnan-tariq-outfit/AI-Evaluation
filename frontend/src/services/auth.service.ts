@@ -9,6 +9,7 @@ import {
   RegisterRequest,
   AUTH_STORAGE_KEYS,
 } from '../types/auth.types';
+import { clearChatHistory } from '../lib/chatHistory';
 
 // API Configuration
 const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
@@ -157,6 +158,7 @@ export class AuthService {
       localStorage.removeItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
       localStorage.removeItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
       localStorage.removeItem(AUTH_STORAGE_KEYS.USER);
+      clearChatHistory();
       // Clear cookies
       this.deleteCookie('nexusai_access_token');
     }
