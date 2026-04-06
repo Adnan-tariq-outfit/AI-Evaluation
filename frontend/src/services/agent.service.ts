@@ -1,5 +1,9 @@
 import { AuthService } from './auth.service';
-import { AgentsResponse, AgentWizardPayload } from '../types/agent.types';
+import {
+  AgentsResponse,
+  AgentWizardPayload,
+  CreatedAgent,
+} from '../types/agent.types';
 import { ModelService } from './model.service';
 import { apiClient } from '../lib/api';
 
@@ -126,15 +130,12 @@ export interface AgentRecord {
   role: string;
   status: 'Draft' | 'Live';
   createdAt: string;
+  description: string;
+  modelId?: string;
+  modelName?: string;
+  modelProvider?: string;
+  tools: string[];
 }
-
-type CreatedAgentCompat = {
-  _id: string;
-  name: string;
-  category: string;
-  status: 'draft' | 'active';
-  createdAt: string;
-};
 
 function toShortTermWindow(mode: MemoryMode): number {
   if (mode === 'No Memory') return 1;
@@ -142,12 +143,17 @@ function toShortTermWindow(mode: MemoryMode): number {
   return 10;
 }
 
-function mapCreatedAgentToRecord(agent: CreatedAgentCompat): AgentRecord {
+function mapCreatedAgentToRecord(agent: CreatedAgent): AgentRecord {
   return {
     id: agent._id,
     name: agent.name,
     role: agent.category,
     status: agent.status === 'active' ? 'Live' : 'Draft',
     createdAt: agent.createdAt,
+    description: agent.description,
+    modelId: agent.config?.modelId,
+    modelName: agent.config?.modelName,
+    modelProvider: agent.config?.modelProvider,
+    tools: agent.config?.tools ?? [],
   };
 }

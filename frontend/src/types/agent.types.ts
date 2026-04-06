@@ -47,6 +47,7 @@ export interface CreatedAgent {
   category: string;
   status: 'draft' | 'active';
   config: {
+    modelId: string;
     modelName: string;
     modelProvider: string;
     tools: string[];

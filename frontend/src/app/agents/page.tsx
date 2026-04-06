@@ -1,8 +1,10 @@
 "use client";
 
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useMemo, useRef, useState } from "react";
+import Image from "next/image";
 import { useRouter } from "next/navigation";
 import {
+  ArrowLeft,
   Bot,
   BrainCircuit,
   Briefcase,
@@ -26,6 +28,7 @@ import {
   X,
 } from "lucide-react";
 import Header from "../../components/Header";
+import ChatInputBar from "../../components/ChatInputBar";
 import { useI18n } from "../../components/I18nProvider";
 import { AuthService } from "../../services/auth.service";
 import {
@@ -35,6 +38,9 @@ import {
   DeploymentType,
   MemoryMode,
 } from "../../services/agent.service";
+import { ChatService } from "../../services/chat.service";
+import { ChatAttachment, ChatMessage } from "../../types/chat.types";
+import { io, Socket } from "socket.io-client";
 
 // ─── Constants ────────────────────────────────────────────────────────────────
 
@@ -70,13 +76,6 @@ const MEMORY_MODES: MemoryMode[] = [
   "Short-term Only",
   "Short + Long-term",
 ];
-const DEPLOYMENT_TYPES: DeploymentType[] = [
-  "API Endpoint",
-  "Embed Widget",
-  "Slack Bot",
-  "WhatsApp / SMS",
-];
-
 const SUGGESTED_SCENARIOS = [
   "Normal use case - typical user query",
   "Edge case - unexpected or out-of-scope request",
@@ -170,6 +169,21 @@ const TEMPLATES: AgentTemplate[] = [
     color: "bg-[#FCEFF4]",
   },
 ];
+
+const AGENT_CHAT_HISTORY_STORAGE_PREFIX = "nexusai.agentChat.messages.v1";
+
+function getAgentChatHistory(historyKey: string): ChatMessage[] {
+  if (typeof window === "undefined") return [];
+
+  try {
+    const raw = window.sessionStorage.getItem(historyKey);
+    if (!raw) return [];
+    const parsed = JSON.parse(raw) as ChatMessage[];
+    return Array.isArray(parsed) ? parsed : [];
+  } catch {
+    return [];
+  }
+}
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 
@@ -927,6 +941,317 @@ function BuilderWizard({
 
 // ─── Main Page ─────────────────────────────────────────────────────────────────
 
+function AgentChatPanel({
+  agent,
+  onBack,
+}: {
+  agent: AgentRecord;
+  onBack: () => void;
+}) {
+  const { t } = useI18n();
+  const [input, setInput] = useState("");
+  const historyKey = useMemo(
+    () => `${AGENT_CHAT_HISTORY_STORAGE_PREFIX}.${agent.id}`,
+    [agent.id],
+  );
+  const [messages, setMessages] = useState<ChatMessage[]>(() =>
+    getAgentChatHistory(historyKey),
+  );
+  const [sending, setSending] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const socketRef = useRef<Socket | null>(null);
+  const bottomAnchorRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    try {
+      const safeMessages = messages.map((message) => ({
+        ...message,
+        attachments: message.attachments?.map((attachment) => {
+          const rest = { ...attachment };
+          delete rest.previewUrl;
+          return rest;
+        }),
+      }));
+      window.sessionStorage.setItem(historyKey, JSON.stringify(safeMessages));
+    } catch {
+      // Ignore storage failures.
+    }
+  }, [historyKey, messages]);
+
+  useEffect(() => {
+    const socket = io(ChatService.apiUrl(), { transports: ["websocket"] });
+    socketRef.current = socket;
+
+    socket.on("disconnect", () => {
+      setIsTyping(false);
+    });
+
+    socket.on("chat:typing", (payload: { typing: boolean }) => {
+      setIsTyping(!!payload?.typing);
+    });
+
+    socket.on(
+      "chat:response",
+      (payload: {
+        id: string;
+        role: "assistant";
+        content: string;
+        timestamp: string;
+      }) => {
+        const assistantMessage: ChatMessage = {
+          id: payload.id ?? crypto.randomUUID(),
+          role: "assistant",
+          content: payload.content ?? "",
+          timestamp: payload.timestamp ?? new Date().toISOString(),
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+      },
+    );
+
+    socket.on("chat:ack", () => {
+      setSending(false);
+    });
+
+    return () => {
+      socket.disconnect();
+      socketRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    bottomAnchorRef.current?.scrollIntoView({
+      behavior: "smooth",
+      block: "end",
+    });
+  }, [messages, sending, isTyping]);
+
+  const sendMessage = async (
+    text: string,
+    uploads?: { id: string; file: File; type: string }[],
+  ) => {
+    const trimmed = (text ?? "").trim();
+    if (!trimmed && (!uploads || uploads.length === 0)) return;
+    if (sending) return;
+
+    const clientMessageId = crypto.randomUUID();
+    const localAttachments: ChatAttachment[] =
+      uploads?.map((upload) => ({
+        id: upload.id,
+        kind: (upload.type as ChatAttachment["kind"]) ?? "document",
+        name: upload.file.name,
+        mimeType: upload.file.type || "application/octet-stream",
+        size: upload.file.size,
+        previewUrl:
+          upload.type === "image" || upload.type === "video"
+            ? URL.createObjectURL(upload.file)
+            : undefined,
+      })) ?? [];
+
+    const userMessage: ChatMessage = {
+      id: clientMessageId,
+      role: "user",
+      content: trimmed,
+      attachments: localAttachments.length ? localAttachments : undefined,
+      timestamp: new Date().toISOString(),
+    };
+
+    setMessages((prev) => [...prev, userMessage]);
+    setInput("");
+    setSending(true);
+
+    try {
+      const uploaded =
+        uploads && uploads.length > 0
+          ? await ChatService.uploadAttachments(uploads.map((upload) => upload.file))
+          : [];
+
+      socketRef.current?.emit("chat:message", {
+        clientMessageId,
+        text: trimmed,
+        modelId: agent.modelId,
+        attachments: uploaded,
+      });
+
+      if (!socketRef.current?.connected) {
+        const result = await ChatService.simulate(
+          trimmed || "(attachments)",
+          agent.modelId,
+          uploads?.map((upload) => upload.file) ?? [],
+        );
+
+        const assistantMessage: ChatMessage = {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: result.reply,
+          timestamp: result.timestamp,
+        };
+        setMessages((prev) => [...prev, assistantMessage]);
+        setSending(false);
+      }
+    } catch {
+      const assistantMessage: ChatMessage = {
+        id: crypto.randomUUID(),
+        role: "assistant",
+        content: t("chat.sendError"),
+        timestamp: new Date().toISOString(),
+      };
+      setMessages((prev) => [...prev, assistantMessage]);
+      setSending(false);
+    }
+  };
+
+  return (
+    <div className="p-3 md:p-4 h-full">
+      <div className="rounded-2xl border border-[#eadfce] bg-gradient-to-r from-[#fff7f2] to-[#fffdf9] p-4 md:p-5 h-full flex flex-col min-h-[78vh]">
+        <div className="flex flex-col gap-3 md:flex-row md:items-center md:justify-between">
+          <div className="min-w-0">
+            <button
+              onClick={onBack}
+              className="inline-flex items-center gap-2 rounded-full border border-[#e2d6c6] bg-white px-3 py-1.5 text-xs font-medium text-zinc-700 hover:bg-[#faf6f0]"
+            >
+              <ArrowLeft className="h-3.5 w-3.5" />
+              Back to agent overview
+            </button>
+            <div className="mt-3 flex items-center gap-2">
+              <div className="w-9 h-9 rounded-xl bg-[#c8682b] text-white flex items-center justify-center shrink-0">
+                <Bot className="w-4 h-4" />
+              </div>
+              <div className="min-w-0">
+                <h1 className="text-xl md:text-2xl font-semibold text-zinc-900 truncate">
+                  {agent.name}
+                </h1>
+                <p className="text-sm text-zinc-700 truncate">
+                  {agent.description}
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="rounded-2xl border border-[#eadfce] bg-white px-4 py-3 text-sm text-zinc-700">
+            <p className="text-[11px] font-semibold uppercase tracking-[0.18em] text-zinc-500">
+              Active Model
+            </p>
+            <p className="mt-1 font-semibold text-zinc-900">
+              {agent.modelName ?? "No model selected"}
+            </p>
+            {agent.modelProvider && (
+              <p className="text-xs text-zinc-500">{agent.modelProvider}</p>
+            )}
+          </div>
+        </div>
+
+        <div className="mt-4 rounded-2xl border border-[#eadfce] bg-white p-4 flex-1 min-h-0 flex flex-col">
+          <div className="flex-1 min-h-0 overflow-y-auto rounded-2xl border border-zinc-200 bg-zinc-50 p-4 space-y-3">
+            {messages.length === 0 ? (
+              <div className="h-full flex items-center justify-center">
+                <div className="w-full max-w-2xl bg-white border border-zinc-200 rounded-3xl p-6 text-center">
+                  <div className="w-12 h-12 mx-auto mb-4 rounded-full bg-[#E8F5BD]/70 border border-[#84B179]/30 flex items-center justify-center text-[#6a9a5d]">
+                    ✦
+                  </div>
+                  <h2 className="text-3xl font-semibold text-zinc-900 mb-2">
+                    Chat with {agent.name}
+                  </h2>
+                  <p className="text-sm text-zinc-500 mb-2">
+                    {agent.role} is ready to help inside this dedicated workspace.
+                  </p>
+                  <p className="text-xs text-zinc-500">
+                    Model:{" "}
+                    <span className="font-semibold text-zinc-700">
+                      {agent.modelName ?? "Not selected"}
+                    </span>
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <>
+                {messages.map((message) => (
+                  <div
+                    key={message.id}
+                    className={`max-w-[82%] rounded-lg px-4 py-3 text-sm whitespace-pre-wrap ${
+                      message.role === "user"
+                        ? "ml-auto bg-[#84B179] text-white"
+                        : "bg-white border border-zinc-200 text-zinc-800"
+                    }`}
+                  >
+                    {message.content}
+                    {!!message.attachments?.length && (
+                      <div
+                        className={`mt-3 flex flex-wrap gap-2 ${
+                          message.role === "user" ? "text-white/90" : "text-zinc-700"
+                        }`}
+                      >
+                        {message.attachments.map((attachment) => (
+                          <div
+                            key={attachment.id}
+                            className={`rounded-lg border px-2 py-1 text-xs ${
+                              message.role === "user"
+                                ? "border-white/25 bg-white/10"
+                                : "border-zinc-200 bg-white"
+                            }`}
+                          >
+                            {(attachment.kind === "image" ||
+                              attachment.kind === "video") &&
+                            attachment.previewUrl ? (
+                              attachment.kind === "image" ? (
+                                <Image
+                                  src={attachment.previewUrl}
+                                  alt={attachment.name}
+                                  width={112}
+                                  height={80}
+                                  unoptimized
+                                  className="mb-1 h-20 w-28 rounded object-cover"
+                                />
+                              ) : (
+                                <video
+                                  src={attachment.previewUrl}
+                                  className="mb-1 h-20 w-28 rounded object-cover"
+                                  controls
+                                />
+                              )
+                            ) : null}
+                            <div className="max-w-[240px] truncate">
+                              {attachment.name}
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    )}
+                  </div>
+                ))}
+                {(sending || isTyping) && (
+                  <p className="text-sm text-zinc-500">{t("common.assistantTyping")}</p>
+                )}
+              </>
+            )}
+            <div ref={bottomAnchorRef} />
+          </div>
+
+          <div className="mt-4">
+            <ChatInputBar
+              value={input}
+              onChange={setInput}
+              onSubmit={async (text, uploads) => {
+                await sendMessage(text, uploads);
+              }}
+              submitBehavior="submit"
+              tabRedirectToChatHub={true}
+              disabled={sending}
+            />
+            <p className="mt-2 text-xs text-zinc-500">
+              Responses are generated with{" "}
+              <span className="font-semibold text-zinc-700">
+                {agent.modelName ?? "the assigned model"}
+              </span>
+              {agent.modelProvider ? ` by ${agent.modelProvider}` : ""}.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
 export default function AgentsPage() {
   const { t } = useI18n();
   const router = useRouter();
@@ -939,9 +1264,10 @@ export default function AgentsPage() {
   const [activeTemplate, setActiveTemplate] = useState(TEMPLATES[0].title);
 
   const activeAgentData = useMemo(
-    () => agents.find((a) => a.id === activeAgentId) ?? agents[0],
+    () => agents.find((a) => a.id === activeAgentId) ?? null,
     [agents, activeAgentId],
   );
+  const shouldShowAgentChat = Boolean(activeAgentData?.modelId);
 
   const selectedTemplate =
     TEMPLATES.find((x) => x.title === activeTemplate) ?? TEMPLATES[0];
@@ -957,7 +1283,6 @@ export default function AgentsPage() {
       try {
         const rows = await AgentService.getMyAgents();
         setAgents(rows);
-        if (rows.length > 0) setActiveAgentId(rows[0].id);
       } catch (e) {
         setAgentsError(AuthService.getErrorMessage(e));
       } finally {
@@ -1064,164 +1389,175 @@ export default function AgentsPage() {
 
           {/* Main content */}
           <section className="rounded-2xl border border-[#e7e1d7] bg-white min-h-[78vh] overflow-hidden">
-            <div className="p-3 md:p-4 space-y-4">
-              {/* Hero banner */}
-              <div className="rounded-2xl border border-[#eadfce] bg-gradient-to-r from-[#fff7f2] to-[#fffdf9] p-4 md:p-5">
-                <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-                  <div>
-                    <h1 className="text-xl md:text-2xl font-semibold text-zinc-900">
-                      Build your AI Agent in minutes
-                    </h1>
-                    <p className="text-sm text-zinc-700 mt-1">
-                      Pick a template, customize the behavior, and deploy
-                      instantly.
-                    </p>
-                  </div>
-                  <button
-                    onClick={() => setShowBuilder(true)}
-                    className="self-start md:self-auto rounded-full px-4 py-2 text-sm font-medium bg-[#d56a2f] text-white hover:bg-[#bf5d29]"
-                  >
-                    Start Building
-                  </button>
-                </div>
-
-                <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2.5">
-                  {[
-                    { icon: BrainCircuit, label: "Reasoning Ready" },
-                    { icon: Code2, label: "Dev Workflows" },
-                    { icon: Database, label: "Data Integrations" },
-                    { icon: Rocket, label: "One-click Deploy" },
-                  ].map((item) => (
-                    <div
-                      key={item.label}
-                      className="rounded-xl border border-[#eadfce] bg-white px-3 py-2.5 flex items-center gap-2"
-                    >
-                      <item.icon className="w-4 h-4 text-[#c55f23]" />
-                      <span className="text-xs font-medium text-zinc-800">
-                        {item.label}
-                      </span>
+            {shouldShowAgentChat && activeAgentData ? (
+              <AgentChatPanel
+                key={activeAgentData.id}
+                agent={activeAgentData}
+                onBack={() => setActiveAgentId("")}
+              />
+            ) : (
+              <div className="p-3 md:p-4 space-y-4">
+                {/* Hero banner */}
+                <div className="rounded-2xl border border-[#eadfce] bg-gradient-to-r from-[#fff7f2] to-[#fffdf9] p-4 md:p-5">
+                  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+                    <div>
+                      <h1 className="text-xl md:text-2xl font-semibold text-zinc-900">
+                        Build your AI Agent in minutes
+                      </h1>
+                      <p className="text-sm text-zinc-700 mt-1">
+                        Pick a template, customize the behavior, and deploy
+                        instantly.
+                      </p>
                     </div>
-                  ))}
-                </div>
-              </div>
-
-              {/* Active agent card (if any) */}
-              {activeAgentData && (
-                <div className="rounded-xl border border-[#eadfce] bg-[#fffdf9] p-4">
-                  <p className="text-xs text-zinc-600">Selected agent</p>
-                  <div className="mt-1 flex items-center gap-2">
-                    <Bot className="w-4 h-4 text-[#c55f23]" />
-                    <p className="text-lg font-semibold">
-                      {activeAgentData.name}
-                    </p>
-                    <span className="text-xs px-2 py-0.5 rounded-full bg-[#f2eee6]">
-                      {activeAgentData.role}
-                    </span>
-                  </div>
-                  <p className="text-xs text-zinc-600 mt-2">
-                    Status: {activeAgentData.status}
-                  </p>
-                  <p className="text-xs text-zinc-600">
-                    Created:{" "}
-                    {new Date(activeAgentData.createdAt).toLocaleString()}
-                  </p>
-                </div>
-              )}
-
-              {/* Templates + detail panel */}
-              <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-3">
-                <div>
-                  <p className="text-[11px] font-semibold text-zinc-700 mb-2">
-                    AGENT TEMPLATES
-                  </p>
-                  <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
-                    {TEMPLATES.map((item) => (
-                      <TemplateCard
-                        key={item.title}
-                        item={item}
-                        active={activeTemplate === item.title}
-                        onClick={() => setActiveTemplate(item.title)}
-                      />
-                    ))}
                     <button
                       onClick={() => setShowBuilder(true)}
-                      className="rounded-xl border border-[#eadfd4] bg-[#fcf5ee] p-3 text-zinc-700 min-h-[146px] hover:shadow-sm text-left"
+                      className="self-start md:self-auto rounded-full px-4 py-2 text-sm font-medium bg-[#d56a2f] text-white hover:bg-[#bf5d29]"
                     >
-                      <div className="text-2xl mb-2">+</div>
-                      <div className="text-sm font-medium">
-                        {t("agents.buildFromScratch")}
-                      </div>
-                      <p className="text-xs text-zinc-700 mt-1">
-                        {t("agents.buildFromScratchDesc")}
-                      </p>
+                      Start Building
                     </button>
+                  </div>
+
+                  <div className="mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2.5">
+                    {[
+                      { icon: BrainCircuit, label: "Reasoning Ready" },
+                      { icon: Code2, label: "Dev Workflows" },
+                      { icon: Database, label: "Data Integrations" },
+                      { icon: Rocket, label: "One-click Deploy" },
+                    ].map((item) => (
+                      <div
+                        key={item.label}
+                        className="rounded-xl border border-[#eadfce] bg-white px-3 py-2.5 flex items-center gap-2"
+                      >
+                        <item.icon className="w-4 h-4 text-[#c55f23]" />
+                        <span className="text-xs font-medium text-zinc-800">
+                          {item.label}
+                        </span>
+                      </div>
+                    ))}
                   </div>
                 </div>
 
-                <aside className="rounded-xl border border-[#ece6db] bg-[#faf8f4] p-3 space-y-3 h-fit">
-                  <p className="text-xs font-semibold text-zinc-700">
-                    TEMPLATE DETAILS
-                  </p>
-                  <div className="rounded-lg bg-white border border-[#e6dfd2] p-3">
-                    <div className="flex items-center gap-2 mb-2">
-                      <span
-                        className={`w-8 h-8 rounded-lg ${selectedTemplate.color} inline-flex items-center justify-center`}
-                      >
-                        <Bot className="w-4 h-4 text-zinc-700" />
+                {activeAgentData && (
+                  <div className="rounded-xl border border-[#eadfce] bg-[#fffdf9] p-4">
+                    <p className="text-xs text-zinc-600">Selected agent</p>
+                    <div className="mt-1 flex items-center gap-2">
+                      <Bot className="w-4 h-4 text-[#c55f23]" />
+                      <p className="text-lg font-semibold">
+                        {activeAgentData.name}
+                      </p>
+                      <span className="text-xs px-2 py-0.5 rounded-full bg-[#f2eee6]">
+                        {activeAgentData.role}
                       </span>
-                      <div>
-                        <p className="text-sm font-semibold text-zinc-900">
-                          {selectedTemplate.title}
-                        </p>
-                        <p className="text-xs text-zinc-600">
-                          Ready-to-use workflow
-                        </p>
-                      </div>
                     </div>
-                    <p className="text-xs text-zinc-700 leading-relaxed">
-                      {selectedTemplate.desc}
+                    <p className="text-xs text-zinc-600 mt-2">
+                      Status: {activeAgentData.status}
                     </p>
-                    <div className="mt-2.5 flex flex-wrap gap-1.5">
-                      {selectedTemplate.tags.map((tag) => (
-                        <Badge key={tag} label={tag} />
+                    <p className="text-xs text-zinc-600">
+                      Created:{" "}
+                      {new Date(activeAgentData.createdAt).toLocaleString()}
+                    </p>
+                    {!activeAgentData.modelId && (
+                      <p className="text-xs text-amber-700 mt-2">
+                        Select or assign a model to enter focused chat mode.
+                      </p>
+                    )}
+                  </div>
+                )}
+
+                <div className="grid grid-cols-1 lg:grid-cols-[minmax(0,1fr)_320px] gap-3">
+                  <div>
+                    <p className="text-[11px] font-semibold text-zinc-700 mb-2">
+                      AGENT TEMPLATES
+                    </p>
+                    <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-2.5">
+                      {TEMPLATES.map((item) => (
+                        <TemplateCard
+                          key={item.title}
+                          item={item}
+                          active={activeTemplate === item.title}
+                          onClick={() => setActiveTemplate(item.title)}
+                        />
                       ))}
+                      <button
+                        onClick={() => setShowBuilder(true)}
+                        className="rounded-xl border border-[#eadfd4] bg-[#fcf5ee] p-3 text-zinc-700 min-h-[146px] hover:shadow-sm text-left"
+                      >
+                        <div className="text-2xl mb-2">+</div>
+                        <div className="text-sm font-medium">
+                          {t("agents.buildFromScratch")}
+                        </div>
+                        <p className="text-xs text-zinc-700 mt-1">
+                          {t("agents.buildFromScratchDesc")}
+                        </p>
+                      </button>
                     </div>
                   </div>
-                  <div className="rounded-lg bg-white border border-[#e6dfd2] p-3">
-                    <p className="text-xs font-semibold text-zinc-800 mb-2">
-                      Best for
+
+                  <aside className="rounded-xl border border-[#ece6db] bg-[#faf8f4] p-3 space-y-3 h-fit">
+                    <p className="text-xs font-semibold text-zinc-700">
+                      TEMPLATE DETAILS
                     </p>
-                    <div className="space-y-1.5 text-xs text-zinc-700">
-                      <div className="flex items-center gap-2">
-                        <Briefcase className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
-                        Business automation
+                    <div className="rounded-lg bg-white border border-[#e6dfd2] p-3">
+                      <div className="flex items-center gap-2 mb-2">
+                        <span
+                          className={`w-8 h-8 rounded-lg ${selectedTemplate.color} inline-flex items-center justify-center`}
+                        >
+                          <Bot className="w-4 h-4 text-zinc-700" />
+                        </span>
+                        <div>
+                          <p className="text-sm font-semibold text-zinc-900">
+                            {selectedTemplate.title}
+                          </p>
+                          <p className="text-xs text-zinc-600">
+                            Ready-to-use workflow
+                          </p>
+                        </div>
                       </div>
-                      <div className="flex items-center gap-2">
-                        <Code2 className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
-                        Developer assistants
-                      </div>
-                      <div className="flex items-center gap-2">
-                        <Megaphone className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
-                        Content and growth workflows
+                      <p className="text-xs text-zinc-700 leading-relaxed">
+                        {selectedTemplate.desc}
+                      </p>
+                      <div className="mt-2.5 flex flex-wrap gap-1.5">
+                        {selectedTemplate.tags.map((tag) => (
+                          <Badge key={tag} label={tag} />
+                        ))}
                       </div>
                     </div>
-                  </div>
-                  <button
-                    onClick={() => setShowBuilder(true)}
-                    className="w-full rounded-xl bg-[#d56a2f] text-white text-sm font-medium py-2 hover:bg-[#bf5d29]"
-                  >
-                    Use this Template
-                  </button>
-                  <button className="w-full rounded-xl border border-[#d9d0c2] text-zinc-700 text-sm font-medium py-2 bg-white hover:bg-[#f8f5ef]">
-                    Preview Workflow
-                  </button>
-                  <div className="rounded-lg border border-[#e6dfd2] bg-white p-2.5 text-[11px] text-zinc-600">
-                    Tip: Start with a template, then customize tools, memory and
-                    response style.
-                  </div>
-                </aside>
+                    <div className="rounded-lg bg-white border border-[#e6dfd2] p-3">
+                      <p className="text-xs font-semibold text-zinc-800 mb-2">
+                        Best for
+                      </p>
+                      <div className="space-y-1.5 text-xs text-zinc-700">
+                        <div className="flex items-center gap-2">
+                          <Briefcase className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
+                          Business automation
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Code2 className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
+                          Developer assistants
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Megaphone className="w-3.5 h-3.5 text-[#c55f23]" />{" "}
+                          Content and growth workflows
+                        </div>
+                      </div>
+                    </div>
+                    <button
+                      onClick={() => setShowBuilder(true)}
+                      className="w-full rounded-xl bg-[#d56a2f] text-white text-sm font-medium py-2 hover:bg-[#bf5d29]"
+                    >
+                      Use this Template
+                    </button>
+                    <button className="w-full rounded-xl border border-[#d9d0c2] text-zinc-700 text-sm font-medium py-2 bg-white hover:bg-[#f8f5ef]">
+                      Preview Workflow
+                    </button>
+                    <div className="rounded-lg border border-[#e6dfd2] bg-white p-2.5 text-[11px] text-zinc-600">
+                      Tip: Start with a template, then customize tools, memory and
+                      response style.
+                    </div>
+                  </aside>
+                </div>
               </div>
-            </div>
+            )}
           </section>
         </div>
       </main>
