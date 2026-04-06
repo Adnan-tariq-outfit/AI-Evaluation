@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import type { NextRequest } from 'next/server';
 
 // Routes that require authentication
-const protectedRoutes = ['/profile', '/settings', '/chat-hub', '/agents'];
+// Chat Hub is intentionally public; Agents remains protected
+const protectedRoutes = ['/profile', '/settings', '/agents'];
 
 // Routes that should only be accessible to unauthenticated users
 const authRoutes = ['/login', '/register'];

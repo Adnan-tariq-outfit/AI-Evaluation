@@ -11,6 +11,7 @@ import {
   ArrowRight,
 } from "lucide-react";
 import FeatureButtons from "./FeatureButtons";
+import ChatInputBarLanding from "./ChatInputBarLanding";
 
 interface MediaButtonProps {
   icon: React.ReactNode;
@@ -102,7 +103,7 @@ export default function HeroSection() {
         </motion.p>
 
         {/* Search Bar */}
-        <motion.div variants={itemVariants} className="max-w-2xl mx-auto">
+        <motion.div variants={itemVariants} className=" ">
           <motion.div
             animate={{
               boxShadow: isFocused
@@ -111,58 +112,9 @@ export default function HeroSection() {
             }}
             className="relative bg-white rounded-2xl border border-zinc-100 overflow-hidden shadow-sm"
           >
-            <div className="flex items-center gap-2 p-2">
-              {/* Input Field */}
-              <input
-                type="text"
-                value={searchValue}
-                onChange={(e) => setSearchValue(e.target.value)}
-                onFocus={() => setIsFocused(true)}
-                onBlur={() => setIsFocused(false)}
-                placeholder="Describe what you're looking for..."
-                className="flex-1 px-4 py-3 bg-transparent text-zinc-900 placeholder:text-zinc-400 outline-none focus:outline-none focus-visible:outline-none focus-visible:ring-0 text-base"
-                aria-label="Search for AI models"
-              />
-
-              {/* Media Buttons */}
-              <div className="hidden sm:flex items-center gap-1">
-                <MediaButton
-                  icon={<Mic className="w-5 h-5" />}
-                  label="Voice input"
-                />
-                <MediaButton
-                  icon={<Video className="w-5 h-5" />}
-                  label="Video input"
-                />
-                <MediaButton
-                  icon={<ImageIcon className="w-5 h-5" />}
-                  label="Image input"
-                />
-                <MediaButton
-                  icon={<Paperclip className="w-5 h-5" />}
-                  label="Attach file"
-                />
-              </div>
-
-              {/* CTA Button */}
-              <motion.button
-                onClick={() => {
-                  const query = searchValue.trim();
-                  router.push(
-                    query
-                      ? `/chat-hub?prompt=${encodeURIComponent(query)}`
-                      : "/chat-hub",
-                  );
-                }}
-                className="flex items-center gap-2 px-6 py-3 bg-[#84B179] text-white font-semibold rounded-xl hover:bg-[#A2CB8B] transition-colors whitespace-nowrap"
-                whileHover={{ scale: 1.02 }}
-                whileTap={{ scale: 0.98 }}
-              >
-                <span className="hidden sm:inline">Let&apos;s Go</span>
-                <span className="sm:hidden">Go</span>
-                <ArrowRight className="w-4 h-4" />
-              </motion.button>
-            </div>
+            <section >
+              <ChatInputBarLanding />
+            </section>
 
             {/* Mobile Media Buttons */}
             <div className="sm:hidden flex items-center justify-center gap-2 px-4 pb-3 pt-1">

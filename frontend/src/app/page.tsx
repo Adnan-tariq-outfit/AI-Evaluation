@@ -1,6 +1,7 @@
 import Header from "../components/Header";
 import HeroSection from "../components/HeroSection";
 import Footer from "../components/Footer";
+import ChatInputBarLanding from "../components/ChatInputBarLanding";
 import FeaturedModels from "@/components/FeaturedModels";
 import BuilderFeatures from "@/components/BuilderFeature";
 import BrowseByLab from "@/components/BrowswByLab";
@@ -14,6 +15,7 @@ export default function Home() {
     <div className="min-h-screen flex flex-col bg-white ">
       <Header />
       <main className="flex-1">
+       
         <HeroSection />
         <FeaturedModels />
         <BuilderFeatures />

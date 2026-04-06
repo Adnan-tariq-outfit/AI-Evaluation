@@ -1,50 +1,15 @@
 "use client";
 
-import { FormEvent, useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
 import Header from "../../components/Header";
 import { ModelService } from "../../services/model.service";
 import { ChatService } from "../../services/chat.service";
 import { AiModel } from "../../types/model.types";
-import { ChatMessage } from "../../types/chat.types";
+import { ChatAttachment, ChatMessage } from "../../types/chat.types";
 import { useRouter } from "next/navigation";
-
-const TAB_DATA: Record<string, string[]> = {
-  "Use cases": [
-    "Help me find the best AI model for my project",
-    "I want to build an AI chatbot for my website",
-    "Generate realistic images for my marketing campaign",
-    "Analyze documents and extract key information",
-    "Create AI agents for workflow automation",
-    "Add voice and speech recognition to my app",
-  ],
-  "Monitor the situation": [
-    "Track real-time sentiment on social media",
-    "Monitor server logs for security anomalies",
-    "Analyze stock market trends for specific sectors",
-    "Get alerts for mentions of my brand name online",
-  ],
-  "Create a prototype": [
-    "Draft a React component for a dashboard",
-    "Write a Python script for a basic CRUD API",
-    "Design a database schema for an e-commerce app",
-  ],
-  "Build a business plan": [
-    "Generate a SWOT analysis for a SaaS startup",
-    "Draft a 12-month marketing strategy",
-    "Calculate projected revenue based on user growth",
-  ],
-  "Analyze & research": [
-    "Summarize this scientific research paper",
-    "Compare features of top 5 CRM software",
-    "Explain implications of recent AI regulations",
-  ],
-  "Learn something": [
-    "Teach me prompt engineering basics",
-    "Explain vector databases in simple terms",
-    "How does RAG work in production systems?",
-  ],
-};
+import ChatInputBar from "../../components/ChatInputBar";
+import { consumePendingChat } from "../../lib/pendingChat";
 
 export default function ChatHubPage() {
   const searchParams = useSearchParams();
@@ -55,8 +20,45 @@ export default function ChatHubPage() {
   const [input, setInput] = useState(initialPrompt);
   const [sending, setSending] = useState(false);
   const [messages, setMessages] = useState<ChatMessage[]>([]);
-  const [activeTab, setActiveTab] = useState("Use cases");
   const router = useRouter();
+
+  useEffect(() => {
+    const pending = consumePendingChat();
+    if (!pending) return;
+
+    const attachments: ChatAttachment[] =
+      pending.uploads?.map((u) => ({
+        id: u.id,
+        kind: (u.type as ChatAttachment["kind"]) ?? "document",
+        name: u.file.name,
+        mimeType: u.file.type || "application/octet-stream",
+        size: u.file.size,
+        previewUrl:
+          u.type === "image" || u.type === "video"
+            ? URL.createObjectURL(u.file)
+            : undefined,
+      })) ?? [];
+
+    const userMessage: ChatMessage = {
+      id: crypto.randomUUID(),
+      role: "user",
+      content: pending.text || "",
+      attachments: attachments.length ? attachments : undefined,
+      timestamp: new Date().toISOString(),
+    };
+
+    const assistantMessage: ChatMessage | null = pending.assistantReply
+      ? {
+          id: crypto.randomUUID(),
+          role: "assistant",
+          content: pending.assistantReply.reply,
+          timestamp: pending.assistantReply.timestamp,
+        }
+      : null;
+
+    setMessages((prev) => [...prev, userMessage, ...(assistantMessage ? [assistantMessage] : [])]);
+    setInput("");
+  }, []);
 
   useEffect(() => {
     const loadModels = async () => {
@@ -69,12 +71,30 @@ export default function ChatHubPage() {
     loadModels();
   }, []);
 
-  const sendMessage = async (text: string) => {
-    if (!text.trim()) return;
+  const sendMessage = async (
+    text: string,
+    uploads?: { id: string; file: File; type: string }[],
+  ) => {
+    if (!text.trim() && (!uploads || uploads.length === 0)) return;
+
+    const attachments: ChatAttachment[] =
+      uploads?.map((u) => ({
+        id: u.id,
+        kind: (u.type as ChatAttachment["kind"]) ?? "document",
+        name: u.file.name,
+        mimeType: u.file.type || "application/octet-stream",
+        size: u.file.size,
+        previewUrl:
+          u.type === "image" || u.type === "video"
+            ? URL.createObjectURL(u.file)
+            : undefined,
+      })) ?? [];
+
     const userMessage: ChatMessage = {
       id: crypto.randomUUID(),
       role: "user",
       content: text.trim(),
+      attachments: attachments.length ? attachments : undefined,
       timestamp: new Date().toISOString(),
     };
     setMessages((prev) => [...prev, userMessage]);
@@ -82,8 +102,9 @@ export default function ChatHubPage() {
     setSending(true);
 
     const result = await ChatService.simulate(
-      userMessage.content,
+      userMessage.content || "(attachments)",
       selectedModelId || undefined,
+      uploads?.map((u) => u.file) ?? [],
     );
     const assistantMessage: ChatMessage = {
       id: crypto.randomUUID(),
@@ -93,11 +114,6 @@ export default function ChatHubPage() {
     };
     setMessages((prev) => [...prev, assistantMessage]);
     setSending(false);
-  };
-
-  const onSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    await sendMessage(input);
   };
 
   const filteredModels = models.filter((m) =>
@@ -193,6 +209,41 @@ export default function ChatHubPage() {
                       }`}
                     >
                       {m.content}
+                      {!!m.attachments?.length && (
+                        <div
+                          className={`mt-3 flex flex-wrap gap-2 ${
+                            m.role === "user" ? "text-white/90" : "text-zinc-700"
+                          }`}
+                        >
+                          {m.attachments.map((a) => (
+                            <div
+                              key={a.id}
+                              className={`rounded-lg border px-2 py-1 text-xs ${
+                                m.role === "user"
+                                  ? "border-white/25 bg-white/10"
+                                  : "border-zinc-200 bg-white"
+                              }`}
+                            >
+                              {(a.kind === "image" || a.kind === "video") && a.previewUrl ? (
+                                a.kind === "image" ? (
+                                  <img
+                                    src={a.previewUrl}
+                                    alt={a.name}
+                                    className="mb-1 h-20 w-28 rounded object-cover"
+                                  />
+                                ) : (
+                                  <video
+                                    src={a.previewUrl}
+                                    className="mb-1 h-20 w-28 rounded object-cover"
+                                    controls
+                                  />
+                                )
+                              ) : null}
+                              <div className="max-w-[240px] truncate">{a.name}</div>
+                            </div>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   ))}
                   {sending && (
@@ -202,49 +253,17 @@ export default function ChatHubPage() {
               )}
             </div>
 
-            <form onSubmit={onSubmit} className="mt-4 flex gap-2">
-              <input
+            <div className="mt-4">
+              <ChatInputBar
                 value={input}
-                onChange={(e) => setInput(e.target.value)}
-                placeholder="Describe your project, ask a question, or just say hi..."
-                className="flex-1 px-4 py-3 border border-zinc-300 rounded-lg bg-white text-zinc-900 placeholder:text-zinc-400 focus:outline-none focus:ring-2 focus:ring-[#84B179]"
-              />
-              <button
-                type="submit"
+                onChange={setInput}
+                onSubmit={async (text, uploads) => {
+                  await sendMessage(text, uploads);
+                }}
+                submitBehavior="submit"
+                tabRedirectToChatHub={true}
                 disabled={sending}
-                className="px-5 py-3 rounded-lg bg-[#84B179] text-white font-semibold hover:bg-[#6f9766] disabled:opacity-50"
-              >
-                Send
-              </button>
-            </form>
-
-            <div className="mt-3 border border-zinc-200 rounded-xl p-3 bg-white">
-              <div className="flex gap-2 overflow-x-auto pb-2">
-                {Object.keys(TAB_DATA).map((tab) => (
-                  <button
-                    key={tab}
-                    onClick={() => setActiveTab(tab)}
-                    className={`px-3 py-1.5 rounded-full text-xs whitespace-nowrap ${
-                      activeTab === tab
-                        ? "bg-zinc-900 text-white"
-                        : "bg-zinc-50 text-zinc-600 border border-zinc-200"
-                    }`}
-                  >
-                    {tab}
-                  </button>
-                ))}
-              </div>
-              <div className="grid sm:grid-cols-2 gap-x-8 gap-y-2">
-                {TAB_DATA[activeTab].map((text) => (
-                  <button
-                    key={text}
-                    onClick={() => sendMessage(text)}
-                    className="text-left text-xs text-zinc-600 hover:text-zinc-900"
-                  >
-                    • {text}
-                  </button>
-                ))}
-              </div>
+              />
             </div>
           </section>
 
