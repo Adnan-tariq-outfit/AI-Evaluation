@@ -289,7 +289,7 @@ function TemplateCard({
 
 function WizardStepBar({ step }: { step: number }) {
   return (
-    <div className="px-6 py-2 border-b border-[#e4e1dc] flex items-center gap-5 text-sm overflow-x-auto">
+    <div className="px-6 py-2 border-b border-[#dcd6cb] bg-[#f7f4ee] flex items-center gap-5 text-sm overflow-x-auto">
       {WIZARD_STEPS.map((label, idx) => {
         const i = idx + 1;
         const done = i < step;
@@ -298,14 +298,20 @@ function WizardStepBar({ step }: { step: number }) {
           <div
             key={label}
             className={`flex items-center gap-2 whitespace-nowrap ${
-              active ? "text-[#1e1e1d] font-semibold" : "text-[#9d9b96]"
+              active
+                ? "text-[#1e1e1d] font-semibold"
+                : done
+                  ? "text-[#4f4b44] font-medium"
+                  : "text-[#6f6a61]"
             }`}
           >
             <span
               className={`w-4 h-4 rounded-full inline-flex items-center justify-center text-[10px] ${
-                done || active
+                active
                   ? "bg-[#c8682b] text-white"
-                  : "bg-[#d9d7d2] text-[#6d6b67]"
+                  : done
+                    ? "bg-[#e7c9b4] text-[#7b3d1c]"
+                    : "bg-[#d6d0c5] text-[#4d4941]"
               }`}
             >
               {done ? <Check className="w-3 h-3" /> : i}
@@ -411,7 +417,7 @@ function BuilderWizard({
           {/* Step 1 – Purpose */}
           {step === 1 && (
             <div>
-              <p className="text-[#c8682b] font-semibold text-sm">
+              <p className="text-[#9a4f20] font-bold text-sm">
                 STEP 1 OF 6
               </p>
               <p className="text-[#66645f] mt-2 text-base">
@@ -428,7 +434,7 @@ function BuilderWizard({
                     onChange={(e) =>
                       setData((p) => ({ ...p, agentName: e.target.value }))
                     }
-                    className="w-full rounded-xl border border-[#d2cec6] bg-white px-4 h-12 text-sm"
+                    className="w-full rounded-xl border border-[#bfb8ac] bg-white px-4 h-12 text-sm text-[#1f1f1d] placeholder:text-[#6f6a61] focus:outline-none focus:ring-2 focus:ring-[#d9b79e] focus:border-[#b6784c]"
                     placeholder="e.g. Support Bot, Research Assistant, Code Reviewer..."
                   />
                 </div>
@@ -458,7 +464,7 @@ function BuilderWizard({
                     onChange={(e) =>
                       setData((p) => ({ ...p, mainJob: e.target.value }))
                     }
-                    className="w-full h-28 rounded-xl border border-[#d2cec6] bg-white p-4 text-sm"
+                    className="w-full h-28 rounded-xl border border-[#bfb8ac] bg-white p-4 text-sm text-[#1f1f1d] placeholder:text-[#6f6a61] focus:outline-none focus:ring-2 focus:ring-[#d9b79e] focus:border-[#b6784c]"
                     placeholder="e.g. Answer customer questions, handle returns, and create support tickets..."
                   />
                   <div className="flex flex-wrap gap-2 mt-2">
@@ -514,7 +520,7 @@ function BuilderWizard({
           {/* Step 2 – System Prompt */}
           {step === 2 && (
             <div>
-              <p className="text-[#c8682b] font-semibold text-sm">
+              <p className="text-[#9a4f20] font-bold text-sm">
                 STEP 2 OF 6
               </p>
               <p className="text-[#66645f] mt-2 text-base">
@@ -532,7 +538,7 @@ function BuilderWizard({
                 </button>
               </div>
               {data.systemPrompt && (
-                <div className="mt-2 rounded-lg border border-[#b5ddd2] bg-[#ddf6ee] text-[#317e6b] px-4 py-2 text-sm">
+                <div className="mt-2 rounded-lg border border-[#99c8ba] bg-[#d8efe8] text-[#215d50] px-4 py-2 text-sm font-medium">
                   Auto-generated from your Step 1 answers — edit freely below.
                 </div>
               )}
@@ -541,7 +547,7 @@ function BuilderWizard({
                 onChange={(e) =>
                   setData((p) => ({ ...p, systemPrompt: e.target.value }))
                 }
-                className="mt-2 w-full h-[300px] rounded-xl border border-[#ccc7be] bg-white p-4 text-[15px] text-[#333] leading-6"
+                className="mt-2 w-full h-[300px] rounded-xl border border-[#bfb8ac] bg-white p-4 text-[15px] text-[#1f1f1d] placeholder:text-[#6f6a61] leading-6 focus:outline-none focus:ring-2 focus:ring-[#d9b79e] focus:border-[#b6784c]"
                 placeholder="Write your system prompt here or click 'Regenerate from answers' above..."
               />
               <div className="grid grid-cols-2 gap-4 mt-4">
@@ -572,7 +578,7 @@ function BuilderWizard({
           {/* Step 3 – Tools */}
           {step === 3 && (
             <div>
-              <p className="text-[#c8682b] font-semibold text-sm">
+              <p className="text-[#9a4f20] font-bold text-sm">
                 STEP 3 OF 6
               </p>
               <p className="text-[#66645f] mt-2 text-base">
@@ -638,7 +644,7 @@ function BuilderWizard({
                   );
                 })}
               </div>
-              <div className="mt-3 rounded-xl border border-[#a9bff0] bg-[#edf3ff] px-4 py-3 text-sm text-[#4360a2]">
+              <div className="mt-3 rounded-xl border border-[#97addb] bg-[#e8efff] px-4 py-3 text-sm text-[#2d4d90] font-medium">
                 Claude Opus 4.6 and other top models support function calling —
                 define tools in JSON schema and the model invokes them
                 automatically.
@@ -649,7 +655,7 @@ function BuilderWizard({
           {/* Step 4 – Memory */}
           {step === 4 && (
             <div>
-              <p className="text-[#c8682b] font-semibold text-sm">
+              <p className="text-[#9a4f20] font-bold text-sm">
                 STEP 4 OF 6
               </p>
               <p className="text-[#66645f] mt-2 text-base">
@@ -697,7 +703,7 @@ function BuilderWizard({
                     </button>
                   );
                 })}
-                <div className="rounded-xl border border-[#e4d39c] bg-[#f9f1d7] px-4 py-3 text-sm text-[#8a6b27]">
+                <div className="rounded-xl border border-[#d5bf7a] bg-[#f5eccd] px-4 py-3 text-sm text-[#6f5317] font-medium">
                   <span className="font-semibold">Pro tip:</span> Long-term
                   memory uses a vector store (Pinecone, Weaviate). Store user
                   preferences and context summaries — not raw conversation logs.
@@ -709,7 +715,7 @@ function BuilderWizard({
           {/* Step 5 – Test */}
           {step === 5 && (
             <div>
-              <p className="text-[#c8682b] font-semibold text-sm">
+              <p className="text-[#9a4f20] font-bold text-sm">
                 STEP 5 OF 6
               </p>
               <p className="text-[#66645f] mt-2 text-base">
@@ -770,7 +776,7 @@ function BuilderWizard({
                         setManualScenario("");
                       }
                     }}
-                    className="w-full h-10 px-3 rounded-lg border border-[#e7e2d9] text-sm"
+                    className="w-full h-10 px-3 rounded-lg border border-[#bfb8ac] text-sm text-[#1f1f1d] placeholder:text-[#6f6a61] focus:outline-none focus:ring-2 focus:ring-[#d9b79e] focus:border-[#b6784c]"
                     placeholder="Add custom test scenario..."
                   />
                   <button
@@ -790,7 +796,7 @@ function BuilderWizard({
                     <Plus className="w-3 h-3" /> Add scenario
                   </button>
                 </div>
-                <div className="mt-3 rounded-xl border border-[#abd6cb] bg-[#d9efe8] px-4 py-3 text-sm text-[#1f6f5f]">
+                <div className="mt-3 rounded-xl border border-[#93c1b5] bg-[#d4eae3] px-4 py-3 text-sm text-[#165f51] font-medium">
                   <span className="font-semibold">Playground:</span> Use the
                   built-in Playground to run test conversations and debug
                   failures. Aim for ≥ 90% pass rate before deployment.
@@ -805,7 +811,7 @@ function BuilderWizard({
           {/* Step 6 – Deploy */}
           {step === 6 && (
             <div>
-              <p className="text-[#c8682b] font-semibold text-sm">
+              <p className="text-[#9a4f20] font-bold text-sm">
                 STEP 6 OF 6
               </p>
               <p className="text-[#66645f] mt-2 text-base">
@@ -863,7 +869,7 @@ function BuilderWizard({
                   </button>
                 ))}
               </div>
-              <div className="mt-3 rounded-xl border border-[#e2c8b7] bg-[#f8f1eb] px-5 py-8 text-center">
+              <div className="mt-3 rounded-xl border border-[#d7b69e] bg-[#f6ece3] px-5 py-8 text-center">
                 <p className="text-lg">🎉</p>
                 <p className="font-semibold text-2xl text-[#252523] mt-1">
                   Your agent is ready to deploy!
@@ -883,7 +889,7 @@ function BuilderWizard({
           <button
             onClick={prev}
             disabled={step === 1}
-            className="h-11 px-6 rounded-full border border-[#cfcac1] bg-white text-[#232220] font-medium disabled:opacity-40"
+            className="h-11 px-6 rounded-full border border-[#bcb5aa] bg-white text-[#232220] font-medium disabled:opacity-50"
           >
             ← Back
           </button>
@@ -892,7 +898,7 @@ function BuilderWizard({
               <span
                 key={idx}
                 className={`h-2.5 rounded-full transition-all ${
-                  step === idx + 1 ? "bg-[#c8682b] w-6" : "bg-[#d0ccc4] w-2.5"
+                  step === idx + 1 ? "bg-[#b65a24] w-6" : "bg-[#b8b1a6] w-2.5"
                 }`}
               />
             ))}

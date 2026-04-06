@@ -1,7 +1,7 @@
 import axios from 'axios';
 import { SimulateChatResponse } from '../types/chat.types';
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 export type UploadedAttachmentMeta = {
   id: string;

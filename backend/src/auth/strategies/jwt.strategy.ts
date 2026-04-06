@@ -30,7 +30,28 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {
     super({
-      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
+      jwtFromRequest: ExtractJwt.fromExtractors([
+        ExtractJwt.fromAuthHeaderAsBearerToken(),
+        (req: { headers?: { cookie?: string } }) => {
+          const cookieHeader = req?.headers?.cookie;
+          if (!cookieHeader) return null;
+
+          const cookies = cookieHeader.split(';').map((part) => part.trim());
+          const accessCookie = cookies.find((c) =>
+            c.startsWith('nexusai_access_token='),
+          );
+          if (!accessCookie) return null;
+
+          const value = accessCookie.split('=').slice(1).join('=');
+          if (!value) return null;
+
+          try {
+            return decodeURIComponent(value);
+          } catch {
+            return value;
+          }
+        },
+      ]),
       ignoreExpiration: false,
       secretOrKey: process.env.JWT_SECRET || 'default-secret-key',
     });

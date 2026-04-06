@@ -12,7 +12,7 @@ import {
 import { clearChatHistory } from '../lib/chatHistory';
 
 // API Configuration
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:3000';
+const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
