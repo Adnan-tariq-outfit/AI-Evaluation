@@ -18,18 +18,34 @@ import {
 } from './dto/agent.dto';
 import { Agent, AgentDocument } from './schemas/agent.schema';
 import { AiModel, AiModelDocument } from '../models/schemas/ai-model.schema';
+import { User, UserDocument } from '../users/schemas/user.schema';
+
+type AgentStepRecord = Record<string, unknown>;
+
+type SerializedAgentSource = {
+  _id: Types.ObjectId | string;
+  name: string;
+  description: string;
+  category: string;
+  status: 'draft' | 'active';
+  config: unknown;
+  createdAt: Date;
+  updatedAt: Date;
+};
 
 @Injectable()
 export class AgentsService {
   constructor(
     @InjectModel(Agent.name) private readonly agentModel: Model<AgentDocument>,
-    @InjectModel(AiModel.name) private readonly aiModelModel: Model<AiModelDocument>,
+    @InjectModel(AiModel.name)
+    private readonly aiModelModel: Model<AiModelDocument>,
+    @InjectModel(User.name) private readonly userModel: Model<UserDocument>,
   ) {}
 
   validateStep(step: number, data: Record<string, unknown>) {
     const classType = this.getStepClass(step);
     const instance = plainToInstance(classType, data);
-    const errors = validateSync(instance as object, {
+    const errors = validateSync(instance, {
       whitelist: true,
       forbidNonWhitelisted: true,
     });
@@ -51,12 +67,14 @@ export class AgentsService {
   }
 
   async create(userId: string, dto: CreateAgentDto) {
-    this.validateStep(1, dto.step1 as unknown as Record<string, unknown>);
-    this.validateStep(2, dto.step2 as unknown as Record<string, unknown>);
-    this.validateStep(3, dto.step3 as unknown as Record<string, unknown>);
-    this.validateStep(4, dto.step4 as unknown as Record<string, unknown>);
-    this.validateStep(5, dto.step5 as unknown as Record<string, unknown>);
-    this.validateStep(6, dto.step6 as unknown as Record<string, unknown>);
+    const userObjectId = await this.requireActiveUser(userId);
+
+    this.validateStep(1, this.toStepRecord(dto.step1));
+    this.validateStep(2, this.toStepRecord(dto.step2));
+    this.validateStep(3, this.toStepRecord(dto.step3));
+    this.validateStep(4, this.toStepRecord(dto.step4));
+    this.validateStep(5, this.toStepRecord(dto.step5));
+    this.validateStep(6, this.toStepRecord(dto.step6));
 
     const model = await this.aiModelModel.findById(dto.step4.modelId).lean();
     if (!model) {
@@ -64,7 +82,7 @@ export class AgentsService {
     }
 
     const created = await this.agentModel.create({
-      userId: new Types.ObjectId(userId),
+      userId: userObjectId,
       name: dto.step1.name.trim(),
       description: dto.step1.description.trim(),
       category: dto.step1.category.trim(),
@@ -91,16 +109,24 @@ export class AgentsService {
       },
     });
 
-    return this.serializeAgent(created.toObject());
+    return this.serializeAgent(
+      created.toObject() as unknown as SerializedAgentSource,
+    );
   }
 
   async findByUser(userId: string) {
+    const userObjectId = await this.requireActiveUser(userId);
+
     const data = await this.agentModel
-      .find({ userId: new Types.ObjectId(userId) })
+      .find({ userId: userObjectId })
       .sort({ createdAt: -1 })
       .lean();
 
-    return { data: data.map((agent) => this.serializeAgent(agent)) };
+    return {
+      data: data.map((agent) =>
+        this.serializeAgent(agent as unknown as SerializedAgentSource),
+      ),
+    };
   }
 
   private getStepClass(step: number) {
@@ -120,7 +146,7 @@ export class AgentsService {
     return classType as new () => object;
   }
 
-  private serializeAgent(agent: any) {
+  private serializeAgent(agent: SerializedAgentSource) {
     return {
       _id: agent._id.toString(),
       name: agent.name,
@@ -131,5 +157,23 @@ export class AgentsService {
       createdAt: agent.createdAt,
       updatedAt: agent.updatedAt,
     };
+  }
+
+  private toStepRecord<T extends object>(value: T): AgentStepRecord {
+    return value as AgentStepRecord;
+  }
+
+  private async requireActiveUser(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid userId');
+    }
+
+    const objectId = new Types.ObjectId(userId);
+    const user = await this.userModel.findById(objectId).lean();
+    if (!user || !user.isActive) {
+      throw new NotFoundException('User not found');
+    }
+
+    return objectId;
   }
 }

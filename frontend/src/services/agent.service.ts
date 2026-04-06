@@ -1,75 +1,30 @@
-import axios from 'axios';
 import { AuthService } from './auth.service';
 import { AgentsResponse, AgentWizardPayload } from '../types/agent.types';
 import { ModelService } from './model.service';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
-
-function authHeaders() {
-  const token = AuthService.getAccessToken();
-  if (!token) {
-    throw new Error('You must be logged in to manage agents.');
-  }
-  return { Authorization: `Bearer ${token}` };
-}
+import { apiClient } from '../lib/api';
 
 export class AgentService {
   private static defaultModelIdPromise: Promise<string> | null = null;
-  private static refreshingPromise: Promise<void> | null = null;
-
-  private static async requestWithAuthRetry<T>(
-    request: () => Promise<T>,
-    retried = false,
-  ): Promise<T> {
-    try {
-      return await request();
-    } catch (error) {
-      if (
-        !retried &&
-        axios.isAxiosError(error) &&
-        error.response?.status === 401 &&
-        AuthService.getRefreshToken()
-      ) {
-        if (!this.refreshingPromise) {
-          this.refreshingPromise = AuthService.refreshTokens()
-            .then(() => undefined)
-            .finally(() => {
-              this.refreshingPromise = null;
-            });
-        }
-        await this.refreshingPromise;
-        return this.requestWithAuthRetry(request, true);
-      }
-      throw error;
-    }
-  }
 
   static async getAgents(): Promise<AgentsResponse> {
-    const response = await this.requestWithAuthRetry(() =>
-      axios.get<AgentsResponse>(`${API_URL}/agents`, {
-        headers: authHeaders(),
-      }),
-    );
+    const userId = this.getCurrentUserId();
+    const response = await apiClient.get<AgentsResponse>('/agents', {
+      params: { userId },
+    });
     return response.data;
   }
 
   static async validateStep(step: number, data: Record<string, unknown>) {
-    const response = await this.requestWithAuthRetry(() =>
-      axios.post<{ valid: boolean }>(
-        `${API_URL}/agents/validate-step`,
-        { step, data },
-        { headers: authHeaders() },
-      ),
-    );
+    const response = await apiClient.post<{ valid: boolean }>('/agents/validate-step', {
+      step,
+      data,
+    });
     return response.data;
   }
 
   static async createAgent(payload: AgentWizardPayload) {
-    const response = await this.requestWithAuthRetry(() =>
-      axios.post(`${API_URL}/agents`, payload, {
-        headers: authHeaders(),
-      }),
-    );
+    const userId = this.getCurrentUserId();
+    const response = await apiClient.post('/agents', { userId, ...payload });
     return response.data;
   }
 
@@ -124,7 +79,7 @@ export class AgentService {
   private static async resolveDefaultModelId(): Promise<string> {
     if (!this.defaultModelIdPromise) {
       this.defaultModelIdPromise = (async () => {
-        const models = await ModelService.getModels();
+        const models = await ModelService.getModels({ userId: this.getCurrentUserId() });
         const first = models.data?.[0];
         if (!first?._id) {
           throw new Error('No AI model available. Please add at least one model.');
@@ -133,6 +88,14 @@ export class AgentService {
       })();
     }
     return this.defaultModelIdPromise;
+  }
+
+  private static getCurrentUserId(): string {
+    const userId = AuthService.getUser()?.id;
+    if (!userId) {
+      throw new Error('User ID is missing. Please log in again.');
+    }
+    return userId;
   }
 }
 

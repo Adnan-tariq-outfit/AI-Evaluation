@@ -1,5 +1,10 @@
 import { ApiPropertyOptional } from '@nestjs/swagger';
-import { IsNumberString, IsOptional, IsString } from 'class-validator';
+import {
+  IsMongoId,
+  IsNumberString,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 export class QueryModelsDto {
   @ApiPropertyOptional({ description: 'Search by model name/provider' })
@@ -26,4 +31,12 @@ export class QueryModelsDto {
   @IsOptional()
   @IsNumberString()
   maxPrice?: string;
+
+  @ApiPropertyOptional({
+    description: 'Optional user id to validate before returning models',
+  })
+  @IsOptional()
+  @IsString()
+  @IsMongoId()
+  userId?: string;
 }

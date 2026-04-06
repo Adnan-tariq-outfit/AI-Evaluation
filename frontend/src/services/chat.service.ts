@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { SimulateChatResponse } from '../types/chat.types';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_URL, publicApiClient } from '../lib/api';
 
 export type UploadedAttachmentMeta = {
   id: string;
@@ -24,8 +22,8 @@ export class ChatService {
     const hasFiles = (files?.length ?? 0) > 0;
 
     if (!hasFiles) {
-      const response = await axios.post<SimulateChatResponse>(
-        `${API_URL}/chat/simulate`,
+      const response = await publicApiClient.post<SimulateChatResponse>(
+        '/chat/simulate',
         { message, modelId },
       );
       return response.data;
@@ -41,9 +39,11 @@ export class ChatService {
     // Important: don't manually set multipart Content-Type; axios will set the
     // correct boundary header automatically. Manually setting it can cause
     // requests to hang on some setups.
-    const response = await axios.post<SimulateChatResponse>(`${API_URL}/chat/simulate`, form, {
-      timeout: 30000,
-    });
+    const response = await publicApiClient.post<SimulateChatResponse>(
+      '/chat/simulate',
+      form,
+      { timeout: 30000 },
+    );
     return response.data;
   }
 
@@ -51,8 +51,8 @@ export class ChatService {
     const form = new FormData();
     for (const f of files) form.append('files', f, f.name);
 
-    const res = await axios.post<{ attachments: UploadedAttachmentMeta[] }>(
-      `${API_URL}/chat/upload`,
+    const res = await publicApiClient.post<{ attachments: UploadedAttachmentMeta[] }>(
+      '/chat/upload',
       form,
       { timeout: 30000 },
     );

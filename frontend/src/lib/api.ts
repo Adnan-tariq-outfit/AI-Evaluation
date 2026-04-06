@@ -1,7 +1,7 @@
 import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 
 // API Configuration
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+export const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
 
 // Storage keys
 export const AUTH_STORAGE_KEYS = {
@@ -12,24 +12,67 @@ export const AUTH_STORAGE_KEYS = {
 
 // Create axios instance
 export const apiClient: AxiosInstance = axios.create({
-  baseURL: `${API_URL}/api`,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
   timeout: 10000,
+  withCredentials: true,
 });
+
+export const publicApiClient: AxiosInstance = axios.create({
+  baseURL: API_URL,
+  headers: {
+    'Content-Type': 'application/json',
+  },
+  timeout: 10000,
+  withCredentials: true,
+});
+
+const getCookieValue = (name: string): string | null => {
+  if (typeof document === 'undefined') {
+    return null;
+  }
+
+  const prefix = `${name}=`;
+  const entry = document.cookie
+    .split(';')
+    .map((part) => part.trim())
+    .find((part) => part.startsWith(prefix));
+
+  if (!entry) {
+    return null;
+  }
+
+  const value = entry.slice(prefix.length);
+  if (!value) {
+    return null;
+  }
+
+  try {
+    return decodeURIComponent(value);
+  } catch {
+    return value;
+  }
+};
 
 // Get token from storage
 export const getAccessToken = (): string | null => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
+    return (
+      localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN) ??
+      getCookieValue(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+    );
   }
   return null;
 };
 
 export const getRefreshToken = (): string | null => {
   if (typeof window !== 'undefined') {
-    return localStorage.getItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
+    return (
+      localStorage.getItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN) ??
+      getCookieValue(AUTH_STORAGE_KEYS.REFRESH_TOKEN)
+    );
   }
   return null;
 };
@@ -151,6 +194,10 @@ apiClient.interceptors.response.use(
       return Promise.reject(error);
     }
 
+    if (originalRequest.url?.includes('/auth/refresh')) {
+      return Promise.reject(error);
+    }
+
     if (error.response?.status === 401 && !originalRequest._retry) {
       if (isRefreshing) {
         return new Promise((resolve, reject) => {
@@ -174,7 +221,9 @@ apiClient.interceptors.response.use(
         if (refreshToken) {
           // Try to refresh with the stored refresh token
           try {
-            const response = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+            const response = await publicApiClient.post('/auth/refresh', {
+              refreshToken,
+            });
             const { tokens } = response.data;
             setTokens(tokens);
 

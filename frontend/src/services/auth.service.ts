@@ -1,4 +1,4 @@
-import axios, { AxiosInstance, AxiosError } from 'axios';
+import axios, { AxiosInstance, AxiosError, InternalAxiosRequestConfig } from 'axios';
 import { jwtDecode } from 'jwt-decode';
 import {
   User,
@@ -10,17 +10,18 @@ import {
   AUTH_STORAGE_KEYS,
 } from '../types/auth.types';
 import { clearChatHistory } from '../lib/chatHistory';
-
-// API Configuration
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { API_URL } from '../lib/api';
 
 // Create axios instance
 const apiClient: AxiosInstance = axios.create({
-  baseURL: `${API_URL}/auth`,
+  baseURL: API_URL,
   headers: {
     'Content-Type': 'application/json',
   },
+  withCredentials: true,
 });
+
+type RequestConfigWithRetry = InternalAxiosRequestConfig & { _retry?: boolean };
 
 // Add request interceptor to attach token
 apiClient.interceptors.request.use(
@@ -38,21 +39,21 @@ apiClient.interceptors.request.use(
 apiClient.interceptors.response.use(
   (response) => response,
   async (error: AxiosError) => {
-    const originalRequest = error.config;
+    const originalRequest = error.config as RequestConfigWithRetry | undefined;
 
-    if (
-      error.response?.status === 401 &&
-      originalRequest &&
-      !(originalRequest as any)._retry
-    ) {
-      (originalRequest as any)._retry = true;
+    if (error.response?.status === 401 && originalRequest && !originalRequest._retry) {
+      originalRequest._retry = true;
 
       const refreshToken = AuthService.getRefreshToken();
 
       if (refreshToken) {
         // Try to refresh the existing token
         try {
-          const response = await axios.post(`${API_URL}/auth/refresh`, { refreshToken });
+          const response = await axios.post(
+            `${API_URL}/auth/refresh`,
+            { refreshToken },
+            { withCredentials: true },
+          );
           const { tokens } = response.data;
           AuthService.setTokens(tokens);
 
@@ -77,20 +78,20 @@ export class AuthService {
   // ============== AUTH METHODS ==============
 
   static async register(data: RegisterRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/register', data);
+    const response = await apiClient.post<AuthResponse>('/auth/register', data);
     this.setAuth(response.data);
     return response.data;
   }
 
   static async login(data: LoginRequest): Promise<AuthResponse> {
-    const response = await apiClient.post<AuthResponse>('/login', data);
+    const response = await apiClient.post<AuthResponse>('/auth/login', data);
     this.setAuth(response.data);
     return response.data;
   }
 
   static async logout(): Promise<LogoutResponse> {
     try {
-      const response = await apiClient.post<LogoutResponse>('/logout');
+      const response = await apiClient.post<LogoutResponse>('/auth/logout');
       this.clearAuth();
       return response.data;
     } catch (error) {
@@ -107,9 +108,11 @@ export class AuthService {
       throw new Error('No refresh token available');
     }
 
-    const response = await axios.post<AuthResponse>(`${API_URL}/auth/refresh`, {
-      refreshToken,
-    });
+    const response = await axios.post<AuthResponse>(
+      `${API_URL}/auth/refresh`,
+      { refreshToken },
+      { withCredentials: true },
+    );
 
     this.setTokens(response.data.tokens);
     // For authenticated users, sync user data too
@@ -125,9 +128,9 @@ export class AuthService {
 
   static async getCurrentUser(): Promise<{ isAuthenticated: boolean; user?: User }> {
     try {
-      const response = await apiClient.get('/me');
+      const response = await apiClient.get('/auth/me');
       return response.data;
-    } catch (error) {
+    } catch {
       return { isAuthenticated: false };
     }
   }
@@ -140,7 +143,7 @@ export class AuthService {
       localStorage.setItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN, data.tokens.refreshToken);
       localStorage.setItem(AUTH_STORAGE_KEYS.USER, JSON.stringify(data.user));
       // Sync to cookies so Next.js middleware can read auth state server-side
-      this.setCookie('nexusai_access_token', data.tokens.accessToken, 7);
+      this.setCookie('nexusai_access_token', data.tokens.accessToken, 1);
     }
   }
 
@@ -180,16 +183,49 @@ export class AuthService {
     }
   }
 
+  private static getCookie(name: string): string | null {
+    if (typeof document === 'undefined') {
+      return null;
+    }
+
+    const prefix = `${name}=`;
+    const entry = document.cookie
+      .split(';')
+      .map((part) => part.trim())
+      .find((part) => part.startsWith(prefix));
+
+    if (!entry) {
+      return null;
+    }
+
+    const value = entry.slice(prefix.length);
+    if (!value) {
+      return null;
+    }
+
+    try {
+      return decodeURIComponent(value);
+    } catch {
+      return value;
+    }
+  }
+
   static getAccessToken(): string | null {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN);
+      return (
+        localStorage.getItem(AUTH_STORAGE_KEYS.ACCESS_TOKEN) ??
+        this.getCookie(AUTH_STORAGE_KEYS.ACCESS_TOKEN)
+      );
     }
     return null;
   }
 
   static getRefreshToken(): string | null {
     if (typeof window !== 'undefined') {
-      return localStorage.getItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN);
+      return (
+        localStorage.getItem(AUTH_STORAGE_KEYS.REFRESH_TOKEN) ??
+        this.getCookie(AUTH_STORAGE_KEYS.REFRESH_TOKEN)
+      );
     }
     return null;
   }

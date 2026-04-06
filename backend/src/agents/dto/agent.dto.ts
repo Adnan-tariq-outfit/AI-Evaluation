@@ -13,6 +13,7 @@ import {
   MaxLength,
   Min,
   MinLength,
+  IsMongoId,
   ValidateNested,
 } from 'class-validator';
 import { Type } from 'class-transformer';
@@ -156,6 +157,20 @@ export class CreateAgentDto {
   @ValidateNested()
   @Type(() => Step6RuntimeDto)
   step6: Step6RuntimeDto;
+}
+
+export class CreateAgentRequestDto extends CreateAgentDto {
+  @ApiProperty()
+  @IsString()
+  @IsMongoId()
+  userId: string;
+}
+
+export class QueryAgentsDto {
+  @ApiProperty()
+  @IsString()
+  @IsMongoId()
+  userId: string;
 }
 
 export type AgentWizardData = CreateAgentDto;

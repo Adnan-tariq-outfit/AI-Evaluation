@@ -1,13 +1,30 @@
-import { Injectable, OnModuleInit } from '@nestjs/common';
+import {
+  BadRequestException,
+  Injectable,
+  NotFoundException,
+  OnModuleInit,
+} from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { AiModel, AiModelDocument } from './schemas/ai-model.schema';
 import { QueryModelsDto } from './dto/query-models.dto';
+import { User, UserDocument } from '../users/schemas/user.schema';
+
+type ModelCondition = Record<string, unknown>;
+
+type ModelFilter = {
+  isActive: boolean;
+  $or?: ModelCondition[];
+  provider?: string;
+  capabilities?: string;
+  $and?: ModelCondition[];
+};
 
 @Injectable()
 export class ModelsService implements OnModuleInit {
   constructor(
     @InjectModel(AiModel.name) private aiModelModel: Model<AiModelDocument>,
+    @InjectModel(User.name) private userModel: Model<UserDocument>,
   ) {}
 
   async onModuleInit() {
@@ -21,7 +38,11 @@ export class ModelsService implements OnModuleInit {
   }
 
   async findAll(query: QueryModelsDto) {
-    const filter: Record<string, any> = { isActive: true };
+    if (query.userId) {
+      await this.requireActiveUser(query.userId);
+    }
+
+    const filter: ModelFilter = { isActive: true };
 
     if (query.search) {
       filter.$or = [
@@ -61,6 +82,19 @@ export class ModelsService implements OnModuleInit {
     });
 
     return { data, meta: { total: data.length, providers, capabilities } };
+  }
+
+  private async requireActiveUser(userId: string) {
+    if (!Types.ObjectId.isValid(userId)) {
+      throw new BadRequestException('Invalid userId');
+    }
+
+    const user = await this.userModel
+      .findById(new Types.ObjectId(userId))
+      .lean();
+    if (!user || !user.isActive) {
+      throw new NotFoundException('User not found');
+    }
   }
 }
 

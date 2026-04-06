@@ -1,7 +1,5 @@
-import axios from 'axios';
 import { ModelsResponse } from '../types/model.types';
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || 'http://localhost:5000';
+import { publicApiClient } from '../lib/api';
 
 export interface ModelFilters {
   search?: string;
@@ -9,6 +7,7 @@ export interface ModelFilters {
   capability?: string;
   minRating?: number;
   maxPrice?: number;
+  userId?: string;
 }
 
 export class ModelService {
@@ -20,8 +19,9 @@ export class ModelService {
     if (filters.capability) params.capability = filters.capability;
     if (typeof filters.minRating === 'number') params.minRating = filters.minRating;
     if (typeof filters.maxPrice === 'number') params.maxPrice = filters.maxPrice;
+    if (filters.userId) params.userId = filters.userId;
 
-    const response = await axios.get<ModelsResponse>(`${API_URL}/models`, { params });
+    const response = await publicApiClient.get<ModelsResponse>('/models', { params });
     return response.data;
   }
 }

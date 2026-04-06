@@ -1,30 +1,21 @@
-import { Body, Controller, Get, Post, Req, UseGuards } from '@nestjs/common';
-import {
-  ApiBearerAuth,
-  ApiOperation,
-  ApiResponse,
-  ApiTags,
-} from '@nestjs/swagger';
-import { JwtAuthGuard } from '../auth/guards/jwt-auth.guard';
-import { RequestUser } from '../auth/strategies/jwt.strategy';
+import { Body, Controller, Get, Post, Query } from '@nestjs/common';
+import { ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { AgentsService } from './agents.service';
-import { CreateAgentDto, ValidateStepDto } from './dto/agent.dto';
-
-interface RequestWithUser extends Request {
-  user: RequestUser;
-}
+import {
+  CreateAgentRequestDto,
+  QueryAgentsDto,
+  ValidateStepDto,
+} from './dto/agent.dto';
 
 @ApiTags('Agents')
 @Controller('agents')
-@UseGuards(JwtAuthGuard)
-@ApiBearerAuth()
 export class AgentsController {
   constructor(private readonly agentsService: AgentsService) {}
 
   @Get()
   @ApiOperation({ summary: 'List authenticated user agents' })
-  findMine(@Req() req: RequestWithUser) {
-    return this.agentsService.findByUser(req.user.userId);
+  findMine(@Query() query: QueryAgentsDto) {
+    return this.agentsService.findByUser(query.userId);
   }
 
   @Post('validate-step')
@@ -36,7 +27,7 @@ export class AgentsController {
   @Post()
   @ApiOperation({ summary: 'Create agent from full 6-step wizard payload' })
   @ApiResponse({ status: 201, description: 'Agent created' })
-  create(@Req() req: RequestWithUser, @Body() dto: CreateAgentDto) {
-    return this.agentsService.create(req.user.userId, dto);
+  create(@Body() dto: CreateAgentRequestDto) {
+    return this.agentsService.create(dto.userId, dto);
   }
 }
